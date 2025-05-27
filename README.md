@@ -4,6 +4,11 @@ This project ingests NEMSIS-compliant XML files into a dynamic PostgreSQL databa
 
 The hope is that by allowing agnecies to build data lakes or datawarehouses internally it will reduce the need for formbuilding or external reporting mechanisms for KPI gathering and quality management systems.
 
+
+## Cautions
+
+While this tool is useful for creating an accessible database for use as a datalake and to ensure up-to-date and accurate KPI creation and visual analysis of data, it is crucial to remember that implementation must involve a proper compliance team specialized in healthcare IT. These records *DO* contain Protected Health Information (PHI) and must be handled in accordance with the principle of minimum necessary to achieve the task at hand. Compliance with HIPAA and the 21st Century CURES Act is necessary. Always ensure that all data handling, storage, and access are reviewed and approved by qualified compliance professionals to protect patient privacy and meet all legal and regulatory requirements.
+
 ## Features
 - **Dynamic Table Creation:** Tables are created based on XML tag structure.
 - **UUID-based Overwrite:** Data is keyed by PatientCareReport UUID for safe updates.
