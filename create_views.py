@@ -7,14 +7,14 @@ from database_setup import get_db_connection
 VIEW_SQL = """
 CREATE OR REPLACE VIEW ecustomresults_full AS
 SELECT
-  "public"."ecustomresults_01"."text_content" AS "text_content",
-  "public"."ecustomresults_01"."pcr_uuid_context" AS "pcr_uuid_context",
-  "Ecustomresults 02 - Parent Element"."text_content" AS "Ecustomresults 02 - Parent Element__text_content",
-  "Ecustomresults 03 - Parent Element"."text_content" AS "Ecustomresults 03 - Parent Element__text_content"
+  t1.text_content AS ecustomresults_01,
+  t1.pcr_uuid_context,
+  t2.text_content AS ecustomresults_02,
+  t3.text_content AS ecustomresults_03
 FROM
-  "public"."ecustomresults_01"
-  FULL JOIN "public"."ecustomresults_02" AS "Ecustomresults 02 - Parent Element" ON "public"."ecustomresults_01"."parent_element_id" = "Ecustomresults 02 - Parent Element"."parent_element_id"
-  FULL JOIN "public"."ecustomresults_03" AS "Ecustomresults 03 - Parent Element" ON "public"."ecustomresults_01"."parent_element_id" = "Ecustomresults 03 - Parent Element"."parent_element_id";
+  public.ecustomresults_01 AS t1
+  FULL JOIN public.ecustomresults_02 AS t2 ON t1.parent_element_id = t2.parent_element_id
+  FULL JOIN public.ecustomresults_03 AS t3 ON t1.parent_element_id = t3.parent_element_id
 """
 
 
