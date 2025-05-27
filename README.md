@@ -1,6 +1,8 @@
 # NEMSIS Database Ingestion
 
-This project ingests NEMSIS-compliant XML files into a dynamic PostgreSQL database schema, creating tables on-the-fly based on XML structure. It is designed for scalable, flexible EMS data warehousing and analysis.
+This project ingests NEMSIS-compliant XML files into a dynamic PostgreSQL database schema, creating tables or colmns dynamically based based on XML structure. It is designed for scalable, flexible EMS data warehousing and analysis from exported NEMSIS compliant software vendors. As long as the software is set to export agency specfic custom question as well they will included in the database for analysis.
+
+The hope is that by allowing agnecies to build data lakes or datawarehouses internally it will reduce the need for formbuilding or external reporting mechanisms for KPI gathering and quality management systems.
 
 ## Features
 - **Dynamic Table Creation:** Tables are created based on XML tag structure.
