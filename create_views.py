@@ -297,6 +297,12 @@ EPROCEDURES_STRUCTURE = [
         "type": "element",
     },
     {
+        "id": "eProcedures.06",
+        "table": "eProcedures_06",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
         "id": "eProcedures.07",
         "table": "eProcedures_07",
         "parent_id": "ProcedureGroup",
@@ -335,6 +341,18 @@ EPROCEDURES_STRUCTURE = [
     {
         "id": "eProcedures.13",
         "table": "eProcedures_13",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.14",
+        "table": "eProcedures_14",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.15",
+        "table": "eProcedures_15",
         "parent_id": "ProcedureGroup",
         "type": "element",
     },
@@ -447,104 +465,693 @@ ECREW_STRUCTURE = [
     },
 ]
 
-EDEVICE_STRUCTURE = (
-    [
-        # Base Group (Parent of all direct children)
-        {
-            "id": "DeviceGroup",
-            "table": "edevice_devicegroup",
-            "parent_id": None,
-            "type": "group",
-        },
-        # Direct Children of DeviceGroup
-        {
-            "id": "eDevice.01",
-            "table": "edevice_01",
-            "parent_id": "DeviceGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.02",
-            "table": "edevice_02",
-            "parent_id": "DeviceGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.03",
-            "table": "edevice_03",
-            "parent_id": "DeviceGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.07",
-            "table": "edevice_07",
-            "parent_id": "DeviceGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.08",
-            "table": "edevice_08",
-            "parent_id": "DeviceGroup",
-            "type": "element",
-        },
-        {
-            "id": "ShockGroup",
-            "table": "edevice_shockgroup",
-            "parent_id": "DeviceGroup",
-            "type": "group",
-        },
-        {
-            "id": "WaveformGroup",
-            "table": "edevice_waveformgroup",
-            "parent_id": "DeviceGroup",
-            "type": "group",
-        },
-        # Direct Children of DeviceGroup
-        {
-            "id": "eDevice.04",
-            "table": "edevice_04",
-            "parent_id": "WaveformGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.05",
-            "table": "edevice_05",
-            "parent_id": "WaveformGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.06",
-            "table": "edevice_06",
-            "parent_id": "WaveformGroup",
-            "type": "element",
-        },
-        # Direct Children of ShockGroup
-        {
-            "id": "eDevice.09",
-            "table": "edevice_09",
-            "parent_id": "ShockGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.10",
-            "table": "edevice_10",
-            "parent_id": "ShockGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.11",
-            "table": "edevice_11",
-            "parent_id": "ShockGroup",
-            "type": "element",
-        },
-        {
-            "id": "eDevice.12",
-            "table": "edevice_12",
-            "parent_id": "ShockGroup",
-            "type": "element",
-        },
-    ],
-)
+EDEVICE_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "DeviceGroup",
+        "table": "edevice_devicegroup",
+        "parent_id": None,
+        "type": "group",
+    },
+    # Direct Children of DeviceGroup
+    {
+        "id": "eDevice.01",
+        "table": "edevice_01",
+        "parent_id": "DeviceGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.02",
+        "table": "edevice_02",
+        "parent_id": "DeviceGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.03",
+        "table": "edevice_03",
+        "parent_id": "DeviceGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.07",
+        "table": "edevice_07",
+        "parent_id": "DeviceGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.08",
+        "table": "edevice_08",
+        "parent_id": "DeviceGroup",
+        "type": "element",
+    },
+    {
+        "id": "ShockGroup",
+        "table": "edevice_shockgroup",
+        "parent_id": "DeviceGroup",
+        "type": "group",
+    },
+    {
+        "id": "WaveformGroup",
+        "table": "edevice_waveformgroup",
+        "parent_id": "DeviceGroup",
+        "type": "group",
+    },
+    # Direct Children of DeviceGroup
+    {
+        "id": "eDevice.04",
+        "table": "edevice_04",
+        "parent_id": "WaveformGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.05",
+        "table": "edevice_05",
+        "parent_id": "WaveformGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.06",
+        "table": "edevice_06",
+        "parent_id": "WaveformGroup",
+        "type": "element",
+    },
+    # Direct Children of ShockGroup
+    {
+        "id": "eDevice.09",
+        "table": "edevice_09",
+        "parent_id": "ShockGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.10",
+        "table": "edevice_10",
+        "parent_id": "ShockGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.11",
+        "table": "edevice_11",
+        "parent_id": "ShockGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDevice.12",
+        "table": "edevice_12",
+        "parent_id": "ShockGroup",
+        "type": "element",
+    },
+]
+
+EARREST_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "eArrest",
+        "table": "earrest",
+        "parent_id": None,
+        "type": "group",
+    },
+    # Direct Children of eArrest
+    {
+        "id": "eArrest.01",
+        "table": "earrest_01",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.02",
+        "table": "earrest_02",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.03",
+        "table": "earrest_03",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.04",
+        "table": "earrest_04",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.05",
+        "table": "earrest_05",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.06",
+        "table": "earrest_06",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.07",
+        "table": "earrest_07",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.08",
+        "table": "earrest_08",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.09",
+        "table": "earrest_09",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.10",
+        "table": "earrest_10",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.11",
+        "table": "earrest_11",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.12",
+        "table": "earrest_12",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.13",
+        "table": "earrest_13",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.14",
+        "table": "earrest_14",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.15",
+        "table": "earrest_15",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.16",
+        "table": "earrest_16",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.17",
+        "table": "earrest_17",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.18",
+        "table": "earrest_18",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.19",
+        "table": "earrest_19",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.20",
+        "table": "earrest_20",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.21",
+        "table": "earrest_21",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+    {
+        "id": "eArrest.22",
+        "table": "earrest_22",
+        "parent_id": "eArrest",
+        "type": "element",
+    },
+]
+
+EDISPATCH_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "eDispatch",
+        "table": "edispatch",
+        "parent_id": None,
+        "type": "group",
+    },
+    # Direct Children of eDispatch
+    {
+        "id": "eDispatch.01",
+        "table": "edispatch_01",
+        "parent_id": "eDispatch",
+        "type": "element",
+    },
+    {
+        "id": "eDispatch.02",
+        "table": "edispatch_02",
+        "parent_id": "eDispatch",
+        "type": "element",
+    },
+    {
+        "id": "eDispatch.03",
+        "table": "edispatch_03",
+        "parent_id": "eDispatch",
+        "type": "element",
+    },
+    {
+        "id": "eDispatch.04",
+        "table": "edispatch_04",
+        "parent_id": "eDispatch",
+        "type": "element",
+    },
+    {
+        "id": "eDispatch.05",
+        "table": "edispatch_05",
+        "parent_id": "eDispatch",
+        "type": "element",
+    },
+    {
+        "id": "eDispatch.06",
+        "table": "edispatch_06",
+        "parent_id": "eDispatch",
+        "type": "element",
+    },
+]
+
+EDISPOSITION_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "eDisposition",
+        "table": "edisposition",
+        "parent_id": None,
+        "type": "group",
+    },
+    # DestinationGroup
+    {
+        "id": "eDisposition.DestinationGroup",
+        "table": "edisposition_destinationgroup",
+        "parent_id": "eDisposition",
+        "type": "group",
+    },
+    {
+        "id": "eDisposition.01",
+        "table": "edisposition_01",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.02",
+        "table": "edisposition_02",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.03",
+        "table": "edisposition_03",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.04",
+        "table": "edisposition_04",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.05",
+        "table": "edisposition_05",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.06",
+        "table": "edisposition_06",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.07",
+        "table": "edisposition_07",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.08",
+        "table": "edisposition_08",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.09",
+        "table": "edisposition_09",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.10",
+        "table": "edisposition_10",
+        "parent_id": "eDisposition.DestinationGroup",
+        "type": "element",
+    },
+    # Direct child of eDisposition
+    {
+        "id": "eDisposition.11",
+        "table": "edisposition_11",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    # IncidentDispositionGroup
+    {
+        "id": "eDisposition.IncidentDispositionGroup",
+        "table": "edisposition_incidentdispositiongroup",
+        "parent_id": "eDisposition",
+        "type": "group",
+    },
+    {
+        "id": "eDisposition.27",
+        "table": "edisposition_27",
+        "parent_id": "eDisposition.IncidentDispositionGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.28",
+        "table": "edisposition_28",
+        "parent_id": "eDisposition.IncidentDispositionGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.29",
+        "table": "edisposition_29",
+        "parent_id": "eDisposition.IncidentDispositionGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.30",
+        "table": "edisposition_30",
+        "parent_id": "eDisposition.IncidentDispositionGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.31",
+        "table": "edisposition_31",
+        "parent_id": "eDisposition.IncidentDispositionGroup",
+        "type": "element",
+    },
+    # More direct children of eDisposition
+    {
+        "id": "eDisposition.13",
+        "table": "edisposition_13",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.14",
+        "table": "edisposition_14",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.15",
+        "table": "edisposition_15",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.16",
+        "table": "edisposition_16",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.17",
+        "table": "edisposition_17",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.18",
+        "table": "edisposition_18",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.19",
+        "table": "edisposition_19",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.20",
+        "table": "edisposition_20",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.21",
+        "table": "edisposition_21",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.22",
+        "table": "edisposition_22",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.23",
+        "table": "edisposition_23",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    # HospitalTeamActivationGroup
+    {
+        "id": "eDisposition.HospitalTeamActivationGroup",
+        "table": "edisposition_hospitalteamactivationgroup",
+        "parent_id": "eDisposition",
+        "type": "group",
+    },
+    {
+        "id": "eDisposition.24",
+        "table": "edisposition_24",
+        "parent_id": "eDisposition.HospitalTeamActivationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.25",
+        "table": "edisposition_25",
+        "parent_id": "eDisposition.HospitalTeamActivationGroup",
+        "type": "element",
+    },
+    # More direct children of eDisposition
+    {
+        "id": "eDisposition.26",
+        "table": "edisposition_26",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+    {
+        "id": "eDisposition.32",
+        "table": "edisposition_32",
+        "parent_id": "eDisposition",
+        "type": "element",
+    },
+]
+
+EEXAM_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {"id": "eExam", "table": "eexam", "parent_id": None, "type": "group"},
+    # Direct elements of eExam
+    {"id": "eExam.01", "table": "eexam_01", "parent_id": "eExam", "type": "element"},
+    {"id": "eExam.02", "table": "eexam_02", "parent_id": "eExam", "type": "element"},
+    # AssessmentGroup
+    {
+        "id": "eExam.AssessmentGroup",
+        "table": "eexam_assessmentgroup",
+        "parent_id": "eExam",
+        "type": "group",
+    },
+    {
+        "id": "eExam.03",
+        "table": "eexam_03",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.04",
+        "table": "eexam_04",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.05",
+        "table": "eexam_05",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.06",
+        "table": "eexam_06",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.07",
+        "table": "eexam_07",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.08",
+        "table": "eexam_08",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.09",
+        "table": "eexam_09",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "element",
+    },
+    # AbdomenGroup
+    {
+        "id": "eExam.AbdomenGroup",
+        "table": "eexam_abdomengroup",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "group",
+    },
+    {
+        "id": "eExam.10",
+        "table": "eexam_10",
+        "parent_id": "eExam.AbdomenGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.11",
+        "table": "eexam_11",
+        "parent_id": "eExam.AbdomenGroup",
+        "type": "element",
+    },
+    # Pelvis/Genitourinary Assessment (direct child of AssessmentGroup)
+    {
+        "id": "eExam.12",
+        "table": "eexam_12",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "element",
+    },
+    # SpineGroup
+    {
+        "id": "eExam.SpineGroup",
+        "table": "eexam_spinegroup",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "group",
+    },
+    {
+        "id": "eExam.13",
+        "table": "eexam_13",
+        "parent_id": "eExam.SpineGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.14",
+        "table": "eexam_14",
+        "parent_id": "eExam.SpineGroup",
+        "type": "element",
+    },
+    # ExtremityGroup
+    {
+        "id": "eExam.ExtremityGroup",
+        "table": "eexam_extremitygroup",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "group",
+    },
+    {
+        "id": "eExam.15",
+        "table": "eexam_15",
+        "parent_id": "eExam.ExtremityGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.16",
+        "table": "eexam_16",
+        "parent_id": "eExam.ExtremityGroup",
+        "type": "element",
+    },
+    # EyeGroup
+    {
+        "id": "eExam.EyeGroup",
+        "table": "eexam_eyegroup",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "group",
+    },
+    {
+        "id": "eExam.17",
+        "table": "eexam_17",
+        "parent_id": "eExam.EyeGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.18",
+        "table": "eexam_18",
+        "parent_id": "eExam.EyeGroup",
+        "type": "element",
+    },
+    # LungGroup
+    {
+        "id": "eExam.LungGroup",
+        "table": "eexam_lunggroup",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "group",
+    },
+    {
+        "id": "eExam.22",
+        "table": "eexam_22",
+        "parent_id": "eExam.LungGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.23",
+        "table": "eexam_23",
+        "parent_id": "eExam.LungGroup",
+        "type": "element",
+    },
+    # ChestGroup
+    {
+        "id": "eExam.ChestGroup",
+        "table": "eexam_chestgroup",
+        "parent_id": "eExam.AssessmentGroup",
+        "type": "group",
+    },
+    {
+        "id": "eExam.24",
+        "table": "eexam_24",
+        "parent_id": "eExam.ChestGroup",
+        "type": "element",
+    },
+    {
+        "id": "eExam.25",
+        "table": "eexam_25",
+        "parent_id": "eExam.ChestGroup",
+        "type": "element",
+    },
+    # More direct elements of eExam
+    {"id": "eExam.20", "table": "eexam_20", "parent_id": "eExam", "type": "element"},
+    {"id": "eExam.21", "table": "eexam_21", "parent_id": "eExam", "type": "element"},
+]
 
 
 def table_exists(cursor, table_name, schema="public"):
@@ -731,10 +1338,30 @@ if __name__ == "__main__":
         edevice_sql = generate_view_sql(view_name, filtered_structure, cursor)
         print(f"\nGenerated SQL for {view_name}:\n{edevice_sql}\n")
         create_view_in_db(conn, view_name, edevice_sql)
-        # TODO: eArrest
-        # TODO: eDispatch
-        # TODO: eDisposition
-        # TODO: eExam
+        # arrest
+        filtered_structure = filter_structure(EARREST_STRUCTURE, cursor)
+        view_name = "v_earrest_flat"
+        earrest_sql = generate_view_sql(view_name, filtered_structure, cursor)
+        print(f"\nGenerated SQL for {view_name}:\n{earrest_sql}\n")
+        create_view_in_db(conn, view_name, earrest_sql)
+        # dispatch
+        filtered_structure = filter_structure(EDISPATCH_STRUCTURE, cursor)
+        view_name = "v_edispatch_flat"
+        edispatch_sql = generate_view_sql(view_name, filtered_structure, cursor)
+        print(f"\nGenerated SQL for {view_name}:\n{edispatch_sql}\n")
+        create_view_in_db(conn, view_name, edispatch_sql)
+        # disposition
+        filtered_structure = filter_structure(EDISPOSITION_STRUCTURE, cursor)
+        view_name = "v_edisposition_flat"
+        edisposition_sql = generate_view_sql(view_name, filtered_structure, cursor)
+        print(f"\nGenerated SQL for {view_name}:\n{edisposition_sql}\n")
+        create_view_in_db(conn, view_name, edisposition_sql)
+        # exam
+        filtered_structure = filter_structure(EEXAM_STRUCTURE, cursor)
+        view_name = "v_eexam_flat"
+        eexam_sql = generate_view_sql(view_name, filtered_structure, cursor)
+        print(f"\nGenerated SQL for {view_name}:\n{eexam_sql}\n")
+        create_view_in_db(conn, view_name, eexam_sql)
         # TODO: eHistory
         # TODO: elnjury
         # TODO: eLabs
