@@ -426,7 +426,7 @@ ECREW_STRUCTURE = [
         "parent_id": None,
         "type": "group",
     },
-    # Direct Children of AirwayGroup
+    # Direct Children of CrewGroup
     {
         "id": "eCrew.01",
         "table": "ecrew_01",
@@ -446,6 +446,105 @@ ECREW_STRUCTURE = [
         "type": "element",
     },
 ]
+
+EDEVICE_STRUCTURE = (
+    [
+        # Base Group (Parent of all direct children)
+        {
+            "id": "DeviceGroup",
+            "table": "edevice_devicegroup",
+            "parent_id": None,
+            "type": "group",
+        },
+        # Direct Children of DeviceGroup
+        {
+            "id": "eDevice.01",
+            "table": "edevice_01",
+            "parent_id": "DeviceGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.02",
+            "table": "edevice_02",
+            "parent_id": "DeviceGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.03",
+            "table": "edevice_03",
+            "parent_id": "DeviceGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.07",
+            "table": "edevice_07",
+            "parent_id": "DeviceGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.08",
+            "table": "edevice_08",
+            "parent_id": "DeviceGroup",
+            "type": "element",
+        },
+        {
+            "id": "ShockGroup",
+            "table": "edevice_shockgroup",
+            "parent_id": "DeviceGroup",
+            "type": "group",
+        },
+        {
+            "id": "WaveformGroup",
+            "table": "edevice_waveformgroup",
+            "parent_id": "DeviceGroup",
+            "type": "group",
+        },
+        # Direct Children of DeviceGroup
+        {
+            "id": "eDevice.04",
+            "table": "edevice_04",
+            "parent_id": "WaveformGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.05",
+            "table": "edevice_05",
+            "parent_id": "WaveformGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.06",
+            "table": "edevice_06",
+            "parent_id": "WaveformGroup",
+            "type": "element",
+        },
+        # Direct Children of ShockGroup
+        {
+            "id": "eDevice.09",
+            "table": "edevice_09",
+            "parent_id": "ShockGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.10",
+            "table": "edevice_10",
+            "parent_id": "ShockGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.11",
+            "table": "edevice_11",
+            "parent_id": "ShockGroup",
+            "type": "element",
+        },
+        {
+            "id": "eDevice.12",
+            "table": "edevice_12",
+            "parent_id": "ShockGroup",
+            "type": "element",
+        },
+    ],
+)
 
 
 def table_exists(cursor, table_name, schema="public"):
@@ -626,8 +725,13 @@ if __name__ == "__main__":
         ecrew_sql = generate_view_sql(view_name, filtered_structure, cursor)
         print(f"\nGenerated SQL for {view_name}:\n{ecrew_sql}\n")
         create_view_in_db(conn, view_name, ecrew_sql)
+        # device
+        filtered_structure = filter_structure(EDEVICE_STRUCTURE, cursor)
+        view_name = "v_edevice_flat"
+        edevice_sql = generate_view_sql(view_name, filtered_structure, cursor)
+        print(f"\nGenerated SQL for {view_name}:\n{edevice_sql}\n")
+        create_view_in_db(conn, view_name, edevice_sql)
         # TODO: eArrest
-        # TODO: eDevice
         # TODO: eDispatch
         # TODO: eDisposition
         # TODO: eExam
