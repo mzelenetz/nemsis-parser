@@ -257,6 +257,196 @@ EVITALS_STRUCTURE = [
     },
 ]
 
+EPROCEDURES_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "ProcedureGroup",
+        "table": "eprocedures_proceduregroup",
+        "parent_id": None,
+        "type": "group",
+    },
+    # Direct Children of ProcedureGroup
+    {
+        "id": "eProcedures.01",
+        "table": "eProcedures_01",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.02",
+        "table": "eProcedures_02",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.03",
+        "table": "eProcedures_03",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.04",
+        "table": "eProcedures_04",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.05",
+        "table": "eProcedures_05",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.07",
+        "table": "eProcedures_07",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.08",
+        "table": "eProcedures_08",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.09",
+        "table": "eProcedures_09",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.10",
+        "table": "eProcedures_10",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.11",
+        "table": "eProcedures_11",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.12",
+        "table": "eProcedures_12",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+    {
+        "id": "eProcedures.13",
+        "table": "eProcedures_13",
+        "parent_id": "ProcedureGroup",
+        "type": "element",
+    },
+]
+
+EAIRWAY_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "AirwayGroup",
+        "table": "eairway_airwaygroup",
+        "parent_id": None,
+        "type": "group",
+    },
+    # Direct Children of AirwayGroup
+    {
+        "id": "eAirway.01",
+        "table": "eairway_01",
+        "parent_id": "AirwayGroup",
+        "type": "element",
+    },
+    {
+        "id": "ConfirmationGroup",
+        "table": "eairway_confirmationgroup",
+        "parent_id": "AirwayGroup",
+        "type": "group",
+    },
+    {
+        "id": "eAirway.08",
+        "table": "eairway_08",
+        "parent_id": "AirwayGroup",
+        "type": "element",
+    },
+    {
+        "id": "eAirway.09",
+        "table": "eairway_09",
+        "parent_id": "AirwayGroup",
+        "type": "element",
+    },
+    {
+        "id": "eAirway.10",
+        "table": "eairway.10",
+        "parent_id": "AirwayGroup",
+        "type": "element",
+    },
+    {
+        "id": "eAirway.11",
+        "table": "eairway.11",
+        "parent_id": "AirwayGroup",
+        "type": "element",
+    },
+    # Children of ConfirmationGroup
+    {
+        "id": "eAirway.03",
+        "table": "eairway_03",
+        "parent_id": "ConfirmationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eAirway.04",
+        "table": "eairway_04",
+        "parent_id": "ConfirmationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eAirway.05",
+        "table": "eairway_05",
+        "parent_id": "ConfirmationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eAirway.06",
+        "table": "eairway_06",
+        "parent_id": "ConfirmationGroup",
+        "type": "element",
+    },
+    {
+        "id": "eAirway.07",
+        "table": "eairway_07",
+        "parent_id": "ConfirmationGroup",
+        "type": "element",
+    },
+]
+
+ECREW_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "CrewGroup",
+        "table": "ecrew_crewgroup",
+        "parent_id": None,
+        "type": "group",
+    },
+    # Direct Children of AirwayGroup
+    {
+        "id": "eCrew.01",
+        "table": "ecrew_01",
+        "parent_id": "CrewGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCrew.02",
+        "table": "ecrew_02",
+        "parent_id": "CrewGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCrew.03",
+        "table": "ecrew_03",
+        "parent_id": "CrewGroup",
+        "type": "element",
+    },
+]
+
 
 def table_exists(cursor, table_name, schema="public"):
     cursor.execute(
@@ -411,9 +601,51 @@ if __name__ == "__main__":
         print("Could not connect to the database.")
     else:
         cursor = conn.cursor()
+        # vitals
         filtered_structure = filter_structure(EVITALS_STRUCTURE, cursor)
         view_name = "v_evitals_flat"
         evitals_sql = generate_view_sql(view_name, filtered_structure, cursor)
         print(f"\nGenerated SQL for {view_name}:\n{evitals_sql}\n")
         create_view_in_db(conn, view_name, evitals_sql)
+        # procedures
+        filtered_structure = filter_structure(EPROCEDURES_STRUCTURE, cursor)
+        view_name = "v_eprocedures_flat"
+        eprocedures_sql = generate_view_sql(view_name, filtered_structure, cursor)
+        print(f"\nGenerated SQL for {view_name}:\n{eprocedures_sql}\n")
+        create_view_in_db(conn, view_name, eprocedures_sql)
+
+        # airway
+        filtered_structure = filter_structure(EAIRWAY_STRUCTURE, cursor)
+        view_name = "v_eairway_flat"
+        eairway_sql = generate_view_sql(view_name, filtered_structure, cursor)
+        print(f"\nGenerated SQL for {view_name}:\n{eairway_sql}\n")
+        create_view_in_db(conn, view_name, eairway_sql)
+        # crew
+        filtered_structure = filter_structure(ECREW_STRUCTURE, cursor)
+        view_name = "v_ecrew_flat"
+        ecrew_sql = generate_view_sql(view_name, filtered_structure, cursor)
+        print(f"\nGenerated SQL for {view_name}:\n{ecrew_sql}\n")
+        create_view_in_db(conn, view_name, ecrew_sql)
+        # TODO: eArrest
+        # TODO: eDevice
+        # TODO: eDispatch
+        # TODO: eDisposition
+        # TODO: eExam
+        # TODO: eHistory
+        # TODO: elnjury
+        # TODO: eLabs
+        # TODO: eMedications
+        # TODO: eNarrative
+        # TODO: eOther
+        # TODO: eOutcome
+        # TODO: ePatient
+        # TODO: ePayment
+        # TODO: eProcedures
+        # TODO: eProtocols
+        # TODO: eRecord
+        # TODO: eResponse
+        # TODO: eScene
+        # TODO: eSituation
+        # TODO: eTimes
+
         conn.close()
