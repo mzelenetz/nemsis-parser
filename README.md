@@ -66,9 +66,46 @@ Or (CMD example):
 for %f in (nemsis_xml\*.xml) do python main_ingest.py "%f"
 ```
 
+## Advanced Usage
+
+### 1. Creating and Refreshing SQL Views
+
+To generate or refresh all normalized SQL views for the NEMSIS data, run:
+
+```bash
+python create_views.py [--verbose]
+```
+- The `--verbose` flag (optional) will print the generated SQL for each view.
+- This script will also update the ElementDefinitions and FieldDefinitions tables from the latest NEMSIS sources.
+
+### 2. Downloading and Populating NEMSIS Element/Field Definitions
+
+To manually (re)populate the `ElementDefinitions` and `FieldDefinitions` tables from the official NEMSIS sources:
+
+```bash
+python create_definitions.py
+```
+- This will download the latest definitions and update the tables in your database.
+
+### 3. Importing Vendor-Specific Excel Data
+
+To import vendor-specific Excel exports into your database, use:
+
+```bash
+python vendor_import.py -file_path <path_to_excel> -vendor <vendor_name> -source <source_name>
+```
+- Example:
+  ```bash
+  python vendor_import.py -file_path "./vendor_data.xlsx" -vendor imagetrend -source new_hampshire
+  ```
+- The script will create tables named `<source>_<sheetname>` for each supported sheet, using only non-blank rows and the columns specified in the script for that vendor.
+- Sheet and column mappings are hardcoded per vendor in the script. Update `VENDOR_SPECS` in `vendor_import.py` to add or modify vendor logic.
+
 ## Output
 - Processed XML files are archived in the `processed_xml_archive/` directory.
-- Data is available in your PostgreSQL database, with dynamic tables for each XML tag type.
+- Data is available in your PostgreSQL database, with dynamic tables for each XML tag type and vendor import.
+- SQL views are available for normalized, analysis-ready querying.
+- Element and field definitions are available in the `ElementDefinitions` and `FieldDefinitions` tables.
 
 ## Notes
 - The ingestion script will skip or update data based on the PatientCareReport UUID.
