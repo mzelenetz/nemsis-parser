@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
-import psycopg2
 from database_setup import get_db_connection
+import os
 
 VENDOR_SPECS = {
     "imagetrend": {
@@ -211,6 +211,8 @@ def parse_args():
 
 
 def import_vendor_excel(file_path, vendor, source):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Excel file not found: {file_path}")
     if vendor not in VENDOR_SPECS:
         raise ValueError(f"Vendor '{vendor}' not supported. Add it to VENDOR_SPECS.")
     conn = get_db_connection()
