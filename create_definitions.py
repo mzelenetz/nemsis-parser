@@ -7,6 +7,11 @@ FIELD_DEF_URL = "https://nemsis.org/media/nemsis_v3/release-3.5.1/DataDictionary
 
 
 def create_element_definitions_table(conn):
+    """
+    Creates the ElementDefinitions table in the database if it does not already exist.
+    
+    The table includes columns for dataset name, element number, element name, code, and code description.
+    """
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -25,6 +30,11 @@ def create_element_definitions_table(conn):
 
 
 def populate_element_definitions_table(conn):
+    """
+    Downloads and populates the ElementDefinitions table with data from the NEMSIS enumeration source.
+    
+    Retrieves the latest element definitions from the NEMSIS enumeration URL, parses the pipe-delimited data, and inserts the cleaned records into the ElementDefinitions table after clearing existing entries.
+    """
     print("[ElementDefinitions] Downloading data from NEMSIS...")
     response = requests.get(NEMSIS_ENUM_URL)
     response.raise_for_status()
@@ -54,6 +64,11 @@ def populate_element_definitions_table(conn):
 
 
 def create_field_definitions_table(conn):
+    """
+    Creates the FieldDefinitions table in the database if it does not already exist.
+    
+    The table includes columns for Dataset, DatasetType, ElementNumber, ElementName, and Attribute.
+    """
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -72,6 +87,11 @@ def create_field_definitions_table(conn):
 
 
 def populate_field_definitions_table(conn):
+    """
+    Downloads and populates the FieldDefinitions table with data from the NEMSIS field definitions source.
+    
+    The function retrieves a pipe-delimited text file from the NEMSIS field definitions URL, parses its contents, and inserts the relevant fields into the FieldDefinitions table after clearing any existing data.
+    """
     print("[FieldDefinitions] Downloading data from NEMSIS...")
     response = requests.get(FIELD_DEF_URL)
     response.raise_for_status()
@@ -101,6 +121,11 @@ def populate_field_definitions_table(conn):
 
 
 def setup_element_definitions(conn):
+    """
+    Creates and populates the ElementDefinitions and FieldDefinitions tables in the database.
+    
+    This function orchestrates the setup process by creating both tables if they do not exist and populating them with data downloaded from external NEMSIS sources. Closes the database connection upon completion.
+    """
     print("[ElementDefinitions] Starting setup...")
     create_element_definitions_table(conn)
     populate_element_definitions_table(conn)

@@ -137,6 +137,11 @@ SELECT
 
 
 def create_view_in_db(conn, view_name, view_sql):
+    """
+    Creates or replaces a SQL view in the database using the provided SQL statement.
+    
+    Attempts to drop the existing view before creating the new one. Prints status messages and rolls back the transaction if view creation fails.
+    """
     cursor = conn.cursor()
     drop_sql = f"DROP VIEW IF EXISTS {view_name} CASCADE;"
     try:
