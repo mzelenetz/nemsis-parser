@@ -2913,107 +2913,6 @@ ESITUATION_STRUCTURE = [
     },
 ]
 
-EPROCEDURES_STRUCTURE = [
-    # Base Group (Parent of all direct children)
-    {
-        "id": "ProcedureGroup",
-        "table": "eprocedures_proceduregroup",
-        "parent_id": None,
-        "type": "group",
-    },
-    # Direct Children of ProcedureGroup
-    {
-        "id": "eProcedures.01",
-        "table": "eProcedures_01",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.02",
-        "table": "eProcedures_02",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.03",
-        "table": "eProcedures_03",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.04",
-        "table": "eProcedures_04",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.05",
-        "table": "eProcedures_05",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.06",
-        "table": "eProcedures_06",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.07",
-        "table": "eProcedures_07",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.08",
-        "table": "eProcedures_08",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.09",
-        "table": "eProcedures_09",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.10",
-        "table": "eProcedures_10",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.11",
-        "table": "eProcedures_11",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.12",
-        "table": "eProcedures_12",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.13",
-        "table": "eProcedures_13",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.14",
-        "table": "eProcedures_14",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-    {
-        "id": "eProcedures.15",
-        "table": "eProcedures_15",
-        "parent_id": "ProcedureGroup",
-        "type": "element",
-    },
-]
-
 ETIMES_STRUCTURE = [
     # Base Group (Parent of all direct children)
     {
@@ -3022,107 +2921,213 @@ ETIMES_STRUCTURE = [
         "parent_id": None,
         "type": "group",
     },
-    # Direct Children of eTiimes
+    # Direct Children of eTimes
     {
         "id": "eTimes.01",
         "table": "etimes_01",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.02",
         "table": "etimes_02",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.03",
         "table": "etimes_03",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.04",
         "table": "etimes_04",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.05",
         "table": "etimes_05",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.06",
         "table": "etimes_06",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.07",
         "table": "etimes_07",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.08",
         "table": "etimes_08",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.09",
         "table": "etimes_09",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.10",
         "table": "etimes_10",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.11",
         "table": "etimes_11",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.12",
         "table": "etimes_12",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.13",
         "table": "etimes_13",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.14",
         "table": "etimes_14",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.15",
         "table": "etimes_15",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.16",
         "table": "etimes_16",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
         "type": "element",
     },
     {
         "id": "eTimes.17",
         "table": "etimes_17",
-        "parent_id": "eTiimes",
+        "parent_id": "eTimes",
+        "type": "element",
+    },
+]
+
+ECUSTOMCONFIGURATION_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "eCustomConfiguration",
+        "table": "ecustomconfiguration",
+        "parent_id": None,
+        "type": "group",
+    },
+    # CustomGroup
+    {
+        "id": "eCustomConfiguration.CustomGroup",
+        "table": "ecustomconfiguration_customgroup",
+        "parent_id": "eCustomConfiguration",
+        "type": "group",
+    },
+    {
+        "id": "eCustomConfiguration.01",
+        "table": "ecustomconfiguration_01",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomConfiguration.02",
+        "table": "ecustomconfiguration_02",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomConfiguration.03",
+        "table": "ecustomconfiguration_03",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomConfiguration.04",
+        "table": "ecustomconfiguration_04",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomConfiguration.05",
+        "table": "ecustomconfiguration_05",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomConfiguration.06",
+        "table": "ecustomconfiguration_06",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomConfiguration.07",
+        "table": "ecustomconfiguration_07",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomConfiguration.08",
+        "table": "ecustomconfiguration_08",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomConfiguration.09",
+        "table": "ecustomconfiguration_09",
+        "parent_id": "eCustomConfiguration.CustomGroup",
+        "type": "element",
+    },
+]
+
+ECUSTOMRESULTS_STRUCTURE = [
+    # Base Group (Parent of all direct children)
+    {
+        "id": "eCustomResults",
+        "table": "ecustomresults",
+        "parent_id": None,
+        "type": "group",
+    },
+    # ResultsGroup
+    {
+        "id": "eCustomResults.ResultsGroup",
+        "table": "ecustomresults_resultsgroup",
+        "parent_id": "eCustomResults",
+        "type": "group",
+    },
+    {
+        "id": "eCustomResults.01",
+        "table": "ecustomresults_01",
+        "parent_id": "eCustomResults.ResultsGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomResults.02",
+        "table": "ecustomresults_02",
+        "parent_id": "eCustomResults.ResultsGroup",
+        "type": "element",
+    },
+    {
+        "id": "eCustomResults.03",
+        "table": "ecustomresults_03",
+        "parent_id": "eCustomResults.ResultsGroup",
         "type": "element",
     },
 ]
