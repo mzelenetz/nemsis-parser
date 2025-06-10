@@ -3,3 +3,4 @@ nemsis_xml/desktop.ini
 .env
 scratch.py
 /__pycache__
+/nemsis_sql

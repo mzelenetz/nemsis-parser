@@ -136,10 +136,24 @@ SELECT
     return final_sql
 
 
+def debug_structure_tables_and_columns(structure, cursor, schema="public"):
+    print("\n--- Debugging Structure Table/Column Existence ---")
+    for item in structure:
+        table = item["table"]
+        exists = table_exists(cursor, table, schema)
+        print(f"Table: {table} - Exists: {exists}")
+        if exists:
+            columns = get_table_columns(cursor, table, schema)
+            print(f"  Columns: {columns}")
+        else:
+            print("  [!] Table does not exist!")
+    print("--- End Debug ---\n")
+
+
 def create_view_in_db(conn, view_name, view_sql):
     """
     Creates or replaces a SQL view in the database using the provided SQL statement.
-    
+
     Attempts to drop the existing view before creating the new one. Prints status messages and rolls back the transaction if view creation fails.
     """
     cursor = conn.cursor()
@@ -345,5 +359,7 @@ if __name__ == "__main__":
             print(f"\nGenerated SQL for {view_name}:\n{ecustomresults_sql}\n")
         create_view_in_db(conn, view_name, ecustomresults_sql)
         setup_element_definitions(conn)
+
+        conn.close()
 
         conn.close()
