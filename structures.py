@@ -13,120 +13,140 @@ EVITALS_STRUCTURE = [
         "table": "evitals_01",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "Date/Time vitals were taken",
     },
     {
         "id": "eVitals.02",
         "table": "evitals_02",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.CardiacRhythmGroup",
         "table": "evitals_cardiacrhythmgroup",
         "parent_id": "eVitals.VitalGroup",
         "type": "group",
+        "description": "",
     },
     {
         "id": "eVitals.BloodPressureGroup",
         "table": "evitals_bloodpressuregroup",
         "parent_id": "eVitals.VitalGroup",
         "type": "group",
+        "description": "",
     },
     {
         "id": "eVitals.HeartRateGroup",
         "table": "evitals_heartrategroup",
         "parent_id": "eVitals.VitalGroup",
         "type": "group",
+        "description": "",
     },
     {
         "id": "eVitals.12",
         "table": "evitals_12",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.13",
         "table": "evitals_13",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.14",
         "table": "evitals_14",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.15",
         "table": "evitals_15",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.16",
         "table": "evitals_16",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.17",
         "table": "evitals_17",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.18",
         "table": "evitals_18",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.GlasgowScoreGroup",
         "table": "evitals_glasgowscoregroup",
         "parent_id": "eVitals.VitalGroup",
         "type": "group",
+        "description": "",
     },
     {
         "id": "eVitals.TemperatureGroup",
         "table": "evitals_temperaturegroup",
         "parent_id": "eVitals.VitalGroup",
         "type": "group",
+        "description": "",
     },
     {
         "id": "eVitals.26",
         "table": "evitals_26",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.PainScaleGroup",
         "table": "evitals_painscalegroup",
         "parent_id": "eVitals.VitalGroup",
         "type": "group",
+        "description": "",
     },
     {
         "id": "eVitals.StrokeScaleGroup",
         "table": "evitals_strokescalegroup",
         "parent_id": "eVitals.VitalGroup",
         "type": "group",
+        "description": "",
     },
     {
         "id": "eVitals.31",
         "table": "evitals_31",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.32",
         "table": "evitals_32",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.33",
         "table": "evitals_33",
         "parent_id": "eVitals.VitalGroup",
         "type": "element",
+        "description": "",
     },
     # Children of CardiacRhythmGroup
     {
@@ -134,18 +154,21 @@ EVITALS_STRUCTURE = [
         "table": "evitals_03",
         "parent_id": "eVitals.CardiacRhythmGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.04",
         "table": "evitals_04",
         "parent_id": "eVitals.CardiacRhythmGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.05",
         "table": "evitals_05",
         "parent_id": "eVitals.CardiacRhythmGroup",
         "type": "element",
+        "description": "",
     },
     # Children of BloodPressureGroup
     {
@@ -153,18 +176,21 @@ EVITALS_STRUCTURE = [
         "table": "evitals_06",
         "parent_id": "eVitals.BloodPressureGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.07",
         "table": "evitals_07",
         "parent_id": "eVitals.BloodPressureGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.08",
         "table": "evitals_08",
         "parent_id": "eVitals.BloodPressureGroup",
         "type": "element",
+        "description": "",
     },
     # Children of HeartRateGroup
     {
@@ -172,12 +198,14 @@ EVITALS_STRUCTURE = [
         "table": "evitals_10",
         "parent_id": "eVitals.HeartRateGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.11",
         "table": "evitals_11",
         "parent_id": "eVitals.HeartRateGroup",
         "type": "element",
+        "description": "",
     },
     # Children of GlasgowScoreGroup
     {
@@ -185,30 +213,35 @@ EVITALS_STRUCTURE = [
         "table": "evitals_19",
         "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.20",
         "table": "evitals_20",
         "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.21",
         "table": "evitals_21",
         "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.22",
         "table": "evitals_22",
         "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.23",
         "table": "evitals_23",
         "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
+        "description": "",
     },
     # Children of TemperatureGroup
     {
@@ -216,12 +249,14 @@ EVITALS_STRUCTURE = [
         "table": "evitals_24",
         "parent_id": "eVitals.TemperatureGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.25",
         "table": "evitals_25",
         "parent_id": "eVitals.TemperatureGroup",
         "type": "element",
+        "description": "",
     },
     # Children of PainScaleGroup
     {
@@ -229,12 +264,14 @@ EVITALS_STRUCTURE = [
         "table": "evitals_27",
         "parent_id": "eVitals.PainScaleGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.28",
         "table": "evitals_28",
         "parent_id": "eVitals.PainScaleGroup",
         "type": "element",
+        "description": "",
     },
     # Children of StrokeScaleGroup
     {
@@ -242,18 +279,21 @@ EVITALS_STRUCTURE = [
         "table": "evitals_29",
         "parent_id": "eVitals.StrokeScaleGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.30",
         "table": "evitals_30",
         "parent_id": "eVitals.StrokeScaleGroup",
         "type": "element",
+        "description": "",
     },
     {
         "id": "eVitals.34",
         "table": "evitals_34",
         "parent_id": "eVitals.StrokeScaleGroup",
         "type": "element",
+        "description": "",
     },
 ]
 
@@ -589,6 +629,7 @@ EARREST_STRUCTURE = [
         "table": "earrest_03",
         "parent_id": "eArrest",
         "type": "element",
+        "description": "indication of an attempt to resuscitate the patient who is in cardiac arrest(attempted, not attempted due to DNR, etc) by any EMS.",
     },
     {
         "id": "eArrest.04",
@@ -631,6 +672,7 @@ EARREST_STRUCTURE = [
         "table": "earrest_10",
         "parent_id": "eArrest",
         "type": "element",
+        "description": "CARES data element #32: Was Hypothermia Care Provided in the Field as defined by CARES in the CARES Data Dictionary",
     },
     {
         "id": "eArrest.11",
@@ -1899,6 +1941,12 @@ EOUTCOME_STRUCTURE = [
         "parent_id": "eOutcome.HospitalProceduresGroup",
         "type": "element",
     },
+    {
+        "id": "eOutcome.21",
+        "table": "eoutcome_21",
+        "parent_id": "eOutcome.HospitalProceduresGroup",
+        "type": "element",
+    },
     # More direct elements of eOutcome
     {
         "id": "eOutcome.13",
@@ -2029,6 +2077,12 @@ EPATIENT_STRUCTURE = [
     {
         "id": "ePatient.22",
         "table": "epatient_22",
+        "parent_id": "ePatient",
+        "type": "element",
+    },
+    {
+        "id": "ePatient.23",
+        "table": "epatient_23",
         "parent_id": "ePatient",
         "type": "element",
     },
