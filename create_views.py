@@ -35,6 +35,20 @@ def filter_structure(structure, cursor, schema="public"):
     return [item for item in structure if table_exists(cursor, item["table"], schema)]
 
 
+def debug_structure_tables_and_columns(structure, cursor, schema="public"):
+    print("\n--- Debugging Structure Table/Column Existence ---")
+    for item in structure:
+        table = item["table"]
+        exists = table_exists(cursor, table, schema)
+        print(f"Table: {table} - Exists: {exists}")
+        if exists:
+            columns = get_table_columns(cursor, table, schema)
+            print(f"  Columns: {columns}")
+        else:
+            print("  [!] Table does not exist!")
+    print("--- End Debug ---\n")
+
+
 def sanitize_alias(id_str):
     """Sanitize alias to avoid SQL errors"""
     return re.sub(r"[^a-zA-Z0-9_]", "_", id_str) + "_"
@@ -75,7 +89,17 @@ def generate_view_sql(view_name: str, structure: list, cursor) -> str:
         existing_cols = table_columns_cache[table_name]
         for col in cols_to_select:
             if col in existing_cols:
-                select_clauses.append(f'"{alias}"."{col}" AS "{alias}{col}"')
+                desc = element.get("description", "")
+                if col == "text_content":
+                    col_alias = alias
+                else:
+                    col_alias = f"{alias}{col}"
+                if desc:
+                    select_clauses.append(
+                        f'"{alias}"."{col}" AS "{col_alias}" -- {desc}'
+                    )
+                else:
+                    select_clauses.append(f'"{alias}"."{col}" AS "{col_alias}" --')
 
         join_clause = (
             f'FULL JOIN "public"."{table_name}" AS "{alias}" '
@@ -84,70 +108,13 @@ def generate_view_sql(view_name: str, structure: list, cursor) -> str:
         join_clauses.append(join_clause)
 
     final_sql = f"""
-CREATE OR REPLACE VIEW public.{view_name} AS
-SELECT
-  {', '.join(select_clauses)}
-{from_clause}
-{' '.join(join_clauses)};
-"""
+        CREATE OR REPLACE VIEW public.{view_name} AS
+        SELECT
+        {', '.join(select_clauses)}
+        {from_clause}
+        {' '.join(join_clauses)};
+        """
     return final_sql
-
-    group_columns = ["element_id", "pcr_uuid_context", "correlationid"]
-    element_columns = ["text_content", "nil", "nv", "correlationid", "Etco2type"]
-
-    aliases = {}
-    base_element = next(item for item in structure if item["parent_id"] is None)
-    base_table_name = base_element["table"]
-    base_alias = sanitize_alias(base_element["id"])
-    aliases[base_element["id"]] = base_alias
-
-    select_clauses = [
-        f'"{base_alias}"."{col}" AS "{base_alias}{col}"' for col in group_columns
-    ]
-    from_clause = f'FROM "public"."{base_table_name}" AS "{base_alias}"'
-    join_clauses = []
-
-    for element in [e for e in structure if e["parent_id"] is not None]:
-        table_name = element["table"]
-        alias = sanitize_alias(element["id"])
-        aliases[element["id"]] = alias
-
-        parent_alias = aliases[element["parent_id"]]
-        cols_to_select = (
-            group_columns if element["type"] == "group" else element_columns
-        )
-
-        for col in cols_to_select:
-            select_clauses.append(f'"{alias}"."{col}" AS "{alias}{col}"')
-
-        join_clause = (
-            f'FULL JOIN "public"."{table_name}" AS "{alias}" '
-            f'ON "{parent_alias}"."element_id" = "{alias}"."parent_element_id"'
-        )
-        join_clauses.append(join_clause)
-
-    final_sql = f"""
-CREATE OR REPLACE VIEW public.{view_name} AS
-SELECT
-  {', '.join(select_clauses)}
-{from_clause}
-{' '.join(join_clauses)};
-"""
-    return final_sql
-
-
-def debug_structure_tables_and_columns(structure, cursor, schema="public"):
-    print("\n--- Debugging Structure Table/Column Existence ---")
-    for item in structure:
-        table = item["table"]
-        exists = table_exists(cursor, table, schema)
-        print(f"Table: {table} - Exists: {exists}")
-        if exists:
-            columns = get_table_columns(cursor, table, schema)
-            print(f"  Columns: {columns}")
-        else:
-            print("  [!] Table does not exist!")
-    print("--- End Debug ---\n")
 
 
 def create_view_in_db(conn, view_name, view_sql):
@@ -358,8 +325,6 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{ecustomresults_sql}\n")
         create_view_in_db(conn, view_name, ecustomresults_sql)
-        setup_element_definitions(conn)
-
-        conn.close()
+        # setup_element_definitions(conn)
 
         conn.close()
