@@ -3135,3 +3135,8 @@ ECUSTOMRESULTS_STRUCTURE = [
         "type": "element",
     },
 ]
+
+
+# TODO: Add comments to the views
+# TODO: Add 3.5.1 new fields to structures
+# TODO: Add pivot view for custom results to include in views for related items

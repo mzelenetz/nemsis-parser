@@ -139,15 +139,26 @@ def generate_comment_sql(view_name: str, structure: list, cursor) -> list:
     base_alias = sanitize_alias(base_element["id"])
     aliases[base_element["id"]] = base_alias
 
+    # Get actual columns in the view
+    cursor.execute(
+        """
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = %s
+    """,
+        (view_name,),
+    )
+    actual_columns = {row[0] for row in cursor.fetchall()}
+
     comment_statements = []
 
     # Base group columns
     for col in group_columns:
         colname = f"{base_alias}{col}"
         desc = base_element.get("description") or ""
-        if desc:
+        if desc and colname in actual_columns:
             comment_statements.append(
-                f"COMMENT ON COLUMN public.{view_name}.{colname} IS '{desc}';"
+                f'COMMENT ON COLUMN public."{view_name}"."{colname}" IS \'{desc}\';'
             )
 
     # Child elements/groups
@@ -159,11 +170,41 @@ def generate_comment_sql(view_name: str, structure: list, cursor) -> list:
         desc = element.get("description") or ""
         for col in cols_to_select:
             colname = f"{alias}{col}"
-            if desc:
+            if desc and colname in actual_columns:
                 comment_statements.append(
-                    f"COMMENT ON COLUMN public.{view_name}.{colname} IS '{desc}';"
+                    f'COMMENT ON COLUMN public."{view_name}"."{colname}" IS \'{desc}\';'
                 )
     return comment_statements
+
+
+def comment_view_in_db(conn, view_name):
+    comment_statements = generate_comment_sql(view_name, filtered_structure, cursor)
+    for comment_statement in comment_statements:
+        cursor.execute(comment_statement)
+        conn.commit()
+
+
+def debug_view_and_comments(conn, view_name, structure, cursor):
+    # Print actual columns in the view
+    print(f"\nColumns in view '{view_name}':")
+    cursor.execute(
+        f"""
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = %s
+        ORDER BY ordinal_position;
+    """,
+        (view_name,),
+    )
+    columns = cursor.fetchall()
+    for col in columns:
+        print(f"  {col[0]}")
+
+    # Print generated COMMENT ON COLUMN statements
+    print(f"\nGenerated COMMENT ON COLUMN statements for '{view_name}':")
+    comment_sqls = generate_comment_sql(view_name, structure, cursor)
+    for sql in comment_sqls:
+        print(sql)
 
 
 if __name__ == "__main__":
@@ -179,6 +220,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{evitals_sql}\n")
         create_view_in_db(conn, view_name, evitals_sql)
+        comment_view_in_db(conn, view_name)
         # procedures
         filtered_structure = filter_structure(EPROCEDURES_STRUCTURE, cursor)
         view_name = "v_eprocedures_flat"
@@ -186,7 +228,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{eprocedures_sql}\n")
         create_view_in_db(conn, view_name, eprocedures_sql)
-
+        comment_view_in_db(conn, view_name)
         # airway
         filtered_structure = filter_structure(EAIRWAY_STRUCTURE, cursor)
         view_name = "v_eairway_flat"
@@ -194,6 +236,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{eairway_sql}\n")
         create_view_in_db(conn, view_name, eairway_sql)
+        comment_view_in_db(conn, view_name)
         # crew
         filtered_structure = filter_structure(ECREW_STRUCTURE, cursor)
         view_name = "v_ecrew_flat"
@@ -201,6 +244,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{ecrew_sql}\n")
         create_view_in_db(conn, view_name, ecrew_sql)
+        comment_view_in_db(conn, view_name)
         # device
         filtered_structure = filter_structure(EDEVICE_STRUCTURE, cursor)
         view_name = "v_edevice_flat"
@@ -208,6 +252,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{edevice_sql}\n")
         create_view_in_db(conn, view_name, edevice_sql)
+        comment_view_in_db(conn, view_name)
         # arrest
         filtered_structure = filter_structure(EARREST_STRUCTURE, cursor)
         view_name = "v_earrest_flat"
@@ -215,6 +260,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{earrest_sql}\n")
         create_view_in_db(conn, view_name, earrest_sql)
+        comment_view_in_db(conn, view_name)
         # dispatch
         filtered_structure = filter_structure(EDISPATCH_STRUCTURE, cursor)
         view_name = "v_edispatch_flat"
@@ -222,6 +268,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{edispatch_sql}\n")
         create_view_in_db(conn, view_name, edispatch_sql)
+        comment_view_in_db(conn, view_name)
         # disposition
         filtered_structure = filter_structure(EDISPOSITION_STRUCTURE, cursor)
         view_name = "v_edisposition_flat"
@@ -229,6 +276,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{edisposition_sql}\n")
         create_view_in_db(conn, view_name, edisposition_sql)
+        comment_view_in_db(conn, view_name)
         # exam
         filtered_structure = filter_structure(EEXAM_STRUCTURE, cursor)
         view_name = "v_eexam_flat"
@@ -236,6 +284,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{eexam_sql}\n")
         create_view_in_db(conn, view_name, eexam_sql)
+        comment_view_in_db(conn, view_name)
         # history
         filtered_structure = filter_structure(EHISTORY_STRUCTURE, cursor)
         view_name = "v_ehistory_flat"
@@ -243,6 +292,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{ehistory_sql}\n")
         create_view_in_db(conn, view_name, ehistory_sql)
+        comment_view_in_db(conn, view_name)
         # injury
         filtered_structure = filter_structure(EINJURY_STRUCTURE, cursor)
         view_name = "v_einjury_flat"
@@ -250,6 +300,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{einjury_sql}\n")
         create_view_in_db(conn, view_name, einjury_sql)
+        comment_view_in_db(conn, view_name)
         # lab
         filtered_structure = filter_structure(ELABS_STRUCTURE, cursor)
         view_name = "v_elabs_flat"
@@ -257,7 +308,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{elabs_sql}\n")
         create_view_in_db(conn, view_name, elabs_sql)
-
+        comment_view_in_db(conn, view_name)
         # medications
         filtered_structure = filter_structure(EMEDICATIONS_STRUCTURE, cursor)
         view_name = "v_emedications_flat"
@@ -265,6 +316,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{emedications_sql}\n")
         create_view_in_db(conn, view_name, emedications_sql)
+        comment_view_in_db(conn, view_name)
         # other
         filtered_structure = filter_structure(EOTHER_STRUCTURE, cursor)
         view_name = "v_eother_flat"
@@ -272,6 +324,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{eother_sql}\n")
         create_view_in_db(conn, view_name, eother_sql)
+        comment_view_in_db(conn, view_name)
         # outcome
         filtered_structure = filter_structure(EOUTCOME_STRUCTURE, cursor)
         view_name = "v_eoutcome_flat"
@@ -279,6 +332,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{eoutcome_sql}\n")
         create_view_in_db(conn, view_name, eoutcome_sql)
+        comment_view_in_db(conn, view_name)
         # patient
         filtered_structure = filter_structure(EPATIENT_STRUCTURE, cursor)
         view_name = "v_epatient_flat"
@@ -286,6 +340,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{epatient_sql}\n")
         create_view_in_db(conn, view_name, epatient_sql)
+        comment_view_in_db(conn, view_name)
         # payment
         filtered_structure = filter_structure(EPAYMENT_STRUCTURE, cursor)
         view_name = "v_epayment_flat"
@@ -293,6 +348,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{epayment_sql}\n")
         create_view_in_db(conn, view_name, epayment_sql)
+        comment_view_in_db(conn, view_name)
         # protocols
         filtered_structure = filter_structure(EPROTOCOLS_STRUCTURE, cursor)
         view_name = "v_eprotocols_flat"
@@ -300,6 +356,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{eprotocols_sql}\n")
         create_view_in_db(conn, view_name, eprotocols_sql)
+        comment_view_in_db(conn, view_name)
         # record
         filtered_structure = filter_structure(ERECORD_STRUCTURE, cursor)
         view_name = "v_erecord_flat"
@@ -307,6 +364,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{erecord_sql}\n")
         create_view_in_db(conn, view_name, erecord_sql)
+        comment_view_in_db(conn, view_name)
         # response
         filtered_structure = filter_structure(ERESPONSE_STRUCTURE, cursor)
         view_name = "v_eresponse_flat"
@@ -314,6 +372,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{eresponse_sql}\n")
         create_view_in_db(conn, view_name, eresponse_sql)
+        comment_view_in_db(conn, view_name)
         # scene
         filtered_structure = filter_structure(ESCENE_STRUCTURE, cursor)
         view_name = "v_escene_flat"
@@ -321,6 +380,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{escene_sql}\n")
         create_view_in_db(conn, view_name, escene_sql)
+        comment_view_in_db(conn, view_name)
         # situation
         filtered_structure = filter_structure(ESITUATION_STRUCTURE, cursor)
         view_name = "v_esituation_flat"
@@ -328,6 +388,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{esituation_sql}\n")
         create_view_in_db(conn, view_name, esituation_sql)
+        comment_view_in_db(conn, view_name)
         # times
         filtered_structure = filter_structure(ETIMES_STRUCTURE, cursor)
         view_name = "v_etimes_flat"
@@ -335,6 +396,7 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{etimes_sql}\n")
         create_view_in_db(conn, view_name, etimes_sql)
+        comment_view_in_db(conn, view_name)
         # custom configuration
         filtered_structure = filter_structure(ECUSTOMCONFIGURATION_STRUCTURE, cursor)
         view_name = "v_ecustomconfiguration_flat"
@@ -344,6 +406,8 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{ecustomconfiguration_sql}\n")
         create_view_in_db(conn, view_name, ecustomconfiguration_sql)
+        comment_view_in_db(conn, view_name)
+
         # custom results
         filtered_structure = filter_structure(ECUSTOMRESULTS_STRUCTURE, cursor)
         view_name = "v_ecustomresults_flat"
@@ -351,6 +415,8 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{ecustomresults_sql}\n")
         create_view_in_db(conn, view_name, ecustomresults_sql)
+        comment_view_in_db(conn, view_name)
+
         setup_element_definitions(conn)
 
         conn.close()
