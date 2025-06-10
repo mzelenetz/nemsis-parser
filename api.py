@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, Query
+from fastapi import FastAPI, File, UploadFile, HTTPException, Query, Body
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 from datetime import datetime
@@ -8,9 +8,18 @@ import uuid
 import psycopg2  # For database interaction
 import psycopg2.extras  # For DictCursor
 from starlette.concurrency import run_in_threadpool
+from create_definitions import (
+    create_element_definitions_table,
+    populate_element_definitions_table,
+    create_field_definitions_table,
+    populate_field_definitions_table,
+    setup_element_definitions,
+)
+from create_views import setup_element_definitions as setup_views
+from vendor_import import import_vendor_excel
+from database_setup import get_db_connection
 
 try:
-    from database_setup import get_db_connection
     from main_ingest import (
         process_xml_file,
         get_ingestion_logic_schema_id,
@@ -21,8 +30,8 @@ except ImportError as e:
 
 
 app = FastAPI(
-    title="NEMSIS Data API",
-    description="API for ingesting NEMSIS XML data and querying processed data.",
+    title="NEMSIS XML Parser",
+    description="API for ingesting NEMSIS XML data into a PostgreSQL database for a Data Lake.",
     version="1.0.0",
 )
 
@@ -185,163 +194,198 @@ async def ingest_xml_file(file: UploadFile = File(...)):
             file.file.close()
 
 
-@app.get("/query/", response_model=QueryResult, tags=["Data Querying"])
-async def execute_query(
-    query_id: str = Query(
-        ...,
-        description="The ID of the pre-defined query (view name) to execute, e.g., v_evitals_flat.",
-    ),
-    date_from: datetime = Query(
-        ..., description="Start of the date range (ISO format)."
-    ),
-    date_to: datetime = Query(..., description="End of the date range (ISO format)."),
-    diagnosis: Optional[List[str]] = Query(
-        None,
-        description="List of diagnosis codes (e.g., ICD-10 codes from eHistory.01).",
-    ),
-    procedures: Optional[List[str]] = Query(
-        None, description="List of procedure codes (e.g., from eProcedures.03)."
-    ),
-    medications: Optional[List[str]] = Query(
-        None,
-        description="List of medication codes (e.g., National Drug Codes from eMedications.03).",
-    ),
-):
+# @app.get("/query/", response_model=QueryResult, tags=["Data Querying"])
+# async def execute_query(
+#     query_id: str = Query(
+#         ...,
+#         description="The ID of the pre-defined query (view name) to execute, e.g., v_evitals_flat.",
+#     ),
+#     date_from: datetime = Query(
+#         ..., description="Start of the date range (ISO format)."
+#     ),
+#     date_to: datetime = Query(..., description="End of the date range (ISO format)."),
+#     diagnosis: Optional[List[str]] = Query(
+#         None,
+#         description="List of diagnosis codes (e.g., ICD-10 codes from eHistory.01).",
+#     ),
+#     procedures: Optional[List[str]] = Query(
+#         None, description="List of procedure codes (e.g., from eProcedures.03)."
+#     ),
+#     medications: Optional[List[str]] = Query(
+#         None,
+#         description="List of medication codes (e.g., National Drug Codes from eMedications.03).",
+#     ),
+# ):
+#     """
+#     Executes a pre-defined query (SQL View) with date range filtering
+#     and optional filtering by diagnosis, procedures, or medications.
+#     """
+#     if not query_id.replace("_", "").isalnum():  # Basic sanitization for view name
+#         raise HTTPException(
+#             status_code=400,
+#             detail="Invalid query_id format. Must be an alphanumeric view name potentially with underscores.",
+#         )
+
+#     # Ensure the query_id (view name) is properly quoted to handle mixed case or special characters if any.
+#     # PostgreSQL identifiers are case-insensitive unless quoted.
+#     target_view = f'"{query_id}"'
+
+#     sql_query_parts = [f"SELECT * FROM {target_view} main_view"]
+#     sql_conditions = []
+#     sql_params = {}
+
+#     # This column name is assumed to exist in all views used for querying.
+#     # It should represent the primary NEMSIS PCR date/time for filtering.
+#     date_filter_column = "pcr_nemsis_datetime"
+
+#     sql_conditions.append(
+#         f'main_view."{date_filter_column}" BETWEEN %(date_from)s AND %(date_to)s'
+#     )
+#     sql_params["date_from"] = date_from
+#     sql_params["date_to"] = date_to
+
+#     # These table names (ehistory_01, eprocedures_03, emedications_03) and the column 'text_content'
+#     # are based on common NEMSIS XML shredding patterns. Adjust if your schema differs.
+#     # Also, 'pcr_uuid_context' is assumed as the common foreign key linking back to the main PCR record.
+#     # Diagnosis codes (checked in esituation_11 or esituation_12)
+#     if diagnosis:
+#         # A record matches if the diagnosis code is in EITHER esituation_11 OR esituation_12
+#         sql_conditions.append(
+#             f"""(EXISTS (SELECT 1 FROM esituation_11 diag_codes_11
+#                          WHERE diag_codes_11.pcr_uuid_context = main_view.pcr_uuid_context
+#                          AND diag_codes_11.text_content = ANY(%(diagnosis)s))
+#                  OR EXISTS (SELECT 1 FROM esituation_12 diag_codes_12
+#                             WHERE diag_codes_12.pcr_uuid_context = main_view.pcr_uuid_context
+#                             AND diag_codes_12.text_content = ANY(%(diagnosis)s)))"""
+#         )
+#         sql_params["diagnosis"] = diagnosis
+
+#     if procedures:
+#         sql_conditions.append(
+#             f"""EXISTS (SELECT 1 FROM eprocedures_03 proc_codes
+#                        WHERE proc_codes.pcr_uuid_context = main_view.pcr_uuid_context
+#                        AND proc_codes.text_content = ANY(%(procedures)s))"""
+#         )
+#         sql_params["procedures"] = procedures
+
+#     if medications:
+#         sql_conditions.append(
+#             f"""EXISTS (SELECT 1 FROM emedications_03 med_codes
+#                        WHERE med_codes.pcr_uuid_context = main_view.pcr_uuid_context
+#                        AND med_codes.text_content = ANY(%(medications)s))"""
+#         )
+#         sql_params["medications"] = medications
+
+#     if sql_conditions:
+#         sql_query_parts.append("WHERE " + " AND ".join(sql_conditions))
+
+#     final_sql_query = " ".join(sql_query_parts)
+
+#     # For debugging, print the constructed query and parameters
+#     # In a production environment, use structured logging.
+#     print(f"Executing SQL: {final_sql_query} with params: {sql_params}")
+
+#     conn = None
+#     try:
+#         conn = get_db_connection()
+#         if conn is None:
+#             # Using 503 Service Unavailable as the database is a critical external service
+#             raise HTTPException(
+#                 status_code=503, detail="Database connection unavailable."
+#             )
+
+#         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+#             try:
+#                 cursor.execute(final_sql_query, sql_params)
+#                 results = cursor.fetchall()
+#             except psycopg2.Error as db_err:
+#                 conn.rollback()  # Rollback any transaction in case of error
+#                 # Construct a more user-friendly error message
+#                 error_detail = f"Database error: {db_err}"
+#                 if (
+#                     "column" in str(db_err).lower()
+#                     and date_filter_column in str(db_err)
+#                     and "does not exist" in str(db_err).lower()
+#                 ):
+#                     error_detail = f"Database error: The specified date filter column '{date_filter_column}' does not exist in the view '{query_id}'. Please ensure the view contains this column or adjust the API's date filtering logic."
+#                 elif (
+#                     "relation" in str(db_err).lower()
+#                     and "does not exist" in str(db_err).lower()
+#                 ):
+#                     # Attempt to extract the missing relation name if possible, otherwise use query_id as a guess.
+#                     missing_relation = (
+#                         str(db_err).split('"')[1] if '"' in str(db_err) else query_id
+#                     )
+#                     error_detail = f"Database error: A required table or view ('{missing_relation}') does not exist. This could be the main query view ('{query_id}') or a table needed for filtering (e.g., ehistory_01, eprocedures_03, emedications_03). Original error: {db_err}"
+
+#                 print(f"Database Error: {error_detail}")  # Log the detailed error
+#                 raise HTTPException(status_code=500, detail=error_detail)
+
+#         # Convert query results (list of psycopg2.extras.DictRow) to list of dicts
+#         data_as_dicts = [dict(row) for row in results]
+
+#         return QueryResult(
+#             query_id=query_id,
+#             parameters=QueryParams(  # Reconstruct QueryParams for the response
+#                 query_id=query_id,
+#                 date_from=date_from,
+#                 date_to=date_to,
+#                 diagnosis=diagnosis,
+#                 procedures=procedures,
+#                 medications=medications,
+#             ),
+#             count=len(data_as_dicts),
+#             data=data_as_dicts,
+#         )
+
+#     except HTTPException as http_exc:
+#         # Re-raise HTTPExceptions to be handled by FastAPI's default error handling
+#         raise http_exc
+#     except Exception as e:
+#         # Catch-all for any other unexpected errors
+#         print(f"Unexpected error during query execution: {e}")  # Log the error
+#         raise HTTPException(
+#             status_code=500,
+#             detail=f"An unexpected error occurred while executing the query: {str(e)}",
+#         )
+#     finally:
+#         if conn:
+#             conn.close()
+
+
+@app.post("/setup/element_definitions/")
+def api_setup_element_definitions():
     """
-    Executes a pre-defined query (SQL View) with date range filtering
-    and optional filtering by diagnosis, procedures, or medications.
+    This endpoint sets up the element and field definitions for the database directly from NEMSIS.
+
+    It retrieves, parses, and sotres the fields and enumerated list from NEMSIS.
+
+    It should only be run once after the database is created, if it is used again it will overwrite the existing definitions.
     """
-    if not query_id.replace("_", "").isalnum():  # Basic sanitization for view name
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid query_id format. Must be an alphanumeric view name potentially with underscores.",
-        )
-
-    # Ensure the query_id (view name) is properly quoted to handle mixed case or special characters if any.
-    # PostgreSQL identifiers are case-insensitive unless quoted.
-    target_view = f'"{query_id}"'
-
-    sql_query_parts = [f"SELECT * FROM {target_view} main_view"]
-    sql_conditions = []
-    sql_params = {}
-
-    # This column name is assumed to exist in all views used for querying.
-    # It should represent the primary NEMSIS PCR date/time for filtering.
-    date_filter_column = "pcr_nemsis_datetime"
-
-    sql_conditions.append(
-        f'main_view."{date_filter_column}" BETWEEN %(date_from)s AND %(date_to)s'
-    )
-    sql_params["date_from"] = date_from
-    sql_params["date_to"] = date_to
-
-    # These table names (ehistory_01, eprocedures_03, emedications_03) and the column 'text_content'
-    # are based on common NEMSIS XML shredding patterns. Adjust if your schema differs.
-    # Also, 'pcr_uuid_context' is assumed as the common foreign key linking back to the main PCR record.
-    # Diagnosis codes (checked in esituation_11 or esituation_12)
-    if diagnosis:
-        # A record matches if the diagnosis code is in EITHER esituation_11 OR esituation_12
-        sql_conditions.append(
-            f"""(EXISTS (SELECT 1 FROM esituation_11 diag_codes_11
-                         WHERE diag_codes_11.pcr_uuid_context = main_view.pcr_uuid_context
-                         AND diag_codes_11.text_content = ANY(%(diagnosis)s))
-                 OR EXISTS (SELECT 1 FROM esituation_12 diag_codes_12
-                            WHERE diag_codes_12.pcr_uuid_context = main_view.pcr_uuid_context
-                            AND diag_codes_12.text_content = ANY(%(diagnosis)s)))"""
-        )
-        sql_params["diagnosis"] = diagnosis
-
-    if procedures:
-        sql_conditions.append(
-            f"""EXISTS (SELECT 1 FROM eprocedures_03 proc_codes
-                       WHERE proc_codes.pcr_uuid_context = main_view.pcr_uuid_context
-                       AND proc_codes.text_content = ANY(%(procedures)s))"""
-        )
-        sql_params["procedures"] = procedures
-
-    if medications:
-        sql_conditions.append(
-            f"""EXISTS (SELECT 1 FROM emedications_03 med_codes
-                       WHERE med_codes.pcr_uuid_context = main_view.pcr_uuid_context
-                       AND med_codes.text_content = ANY(%(medications)s))"""
-        )
-        sql_params["medications"] = medications
-
-    if sql_conditions:
-        sql_query_parts.append("WHERE " + " AND ".join(sql_conditions))
-
-    final_sql_query = " ".join(sql_query_parts)
-
-    # For debugging, print the constructed query and parameters
-    # In a production environment, use structured logging.
-    print(f"Executing SQL: {final_sql_query} with params: {sql_params}")
-
-    conn = None
+    conn = get_db_connection()
     try:
-        conn = get_db_connection()
-        if conn is None:
-            # Using 503 Service Unavailable as the database is a critical external service
-            raise HTTPException(
-                status_code=503, detail="Database connection unavailable."
-            )
-
-        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            try:
-                cursor.execute(final_sql_query, sql_params)
-                results = cursor.fetchall()
-            except psycopg2.Error as db_err:
-                conn.rollback()  # Rollback any transaction in case of error
-                # Construct a more user-friendly error message
-                error_detail = f"Database error: {db_err}"
-                if (
-                    "column" in str(db_err).lower()
-                    and date_filter_column in str(db_err)
-                    and "does not exist" in str(db_err).lower()
-                ):
-                    error_detail = f"Database error: The specified date filter column '{date_filter_column}' does not exist in the view '{query_id}'. Please ensure the view contains this column or adjust the API's date filtering logic."
-                elif (
-                    "relation" in str(db_err).lower()
-                    and "does not exist" in str(db_err).lower()
-                ):
-                    # Attempt to extract the missing relation name if possible, otherwise use query_id as a guess.
-                    missing_relation = (
-                        str(db_err).split('"')[1] if '"' in str(db_err) else query_id
-                    )
-                    error_detail = f"Database error: A required table or view ('{missing_relation}') does not exist. This could be the main query view ('{query_id}') or a table needed for filtering (e.g., ehistory_01, eprocedures_03, emedications_03). Original error: {db_err}"
-
-                print(f"Database Error: {error_detail}")  # Log the detailed error
-                raise HTTPException(status_code=500, detail=error_detail)
-
-        # Convert query results (list of psycopg2.extras.DictRow) to list of dicts
-        data_as_dicts = [dict(row) for row in results]
-
-        return QueryResult(
-            query_id=query_id,
-            parameters=QueryParams(  # Reconstruct QueryParams for the response
-                query_id=query_id,
-                date_from=date_from,
-                date_to=date_to,
-                diagnosis=diagnosis,
-                procedures=procedures,
-                medications=medications,
-            ),
-            count=len(data_as_dicts),
-            data=data_as_dicts,
-        )
-
-    except HTTPException as http_exc:
-        # Re-raise HTTPExceptions to be handled by FastAPI's default error handling
-        raise http_exc
-    except Exception as e:
-        # Catch-all for any other unexpected errors
-        print(f"Unexpected error during query execution: {e}")  # Log the error
-        raise HTTPException(
-            status_code=500,
-            detail=f"An unexpected error occurred while executing the query: {str(e)}",
-        )
+        setup_element_definitions(conn)
+        return {"status": "success", "message": "Element and field definitions set up."}
     finally:
-        if conn:
-            conn.close()
+        conn.close()
+
+
+@app.post("/setup/views/")
+def api_setup_views():
+    conn = get_db_connection()
+    try:
+        setup_views(conn)
+        return {"status": "success", "message": "Views created."}
+    finally:
+        conn.close()
+
+
+@app.post("/setup/vendor_import/")
+def api_vendor_import(
+    file_path: str = Body(...), vendor: str = Body(...), source: str = Body(...)
+):
+    import_vendor_excel(file_path, vendor, source)
+    return {"status": "success", "message": "Vendor data imported."}
 
 
 if __name__ == "__main__":
