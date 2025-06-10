@@ -1,251 +1,258 @@
 EVITALS_STRUCTURE = [
     # Base Group (Parent of all direct children)
+    {"id": "eVitals", "table": "evitals", "parent_id": None, "type": "group"},
     {
-        "id": "VitalGroup",
+        "id": "eVitals.VitalGroup",
         "table": "evitals_vitalgroup",
-        "parent_id": None,
+        "parent_id": "eVitals",
         "type": "group",
     },
     # Direct Children of VitalGroup
     {
         "id": "eVitals.01",
         "table": "evitals_01",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.02",
         "table": "evitals_02",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
-        "id": "CardiacRhythmGroup",
+        "id": "eVitals.CardiacRhythmGroup",
         "table": "evitals_cardiacrhythmgroup",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "group",
     },
     {
-        "id": "BloodPressureGroup",
+        "id": "eVitals.BloodPressureGroup",
         "table": "evitals_bloodpressuregroup",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "group",
     },
     {
-        "id": "HeartRateGroup",
+        "id": "eVitals.HeartRateGroup",
         "table": "evitals_heartrategroup",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "group",
     },
     {
         "id": "eVitals.12",
         "table": "evitals_12",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.13",
         "table": "evitals_13",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.14",
         "table": "evitals_14",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.15",
         "table": "evitals_15",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.16",
         "table": "evitals_16",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.17",
         "table": "evitals_17",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.18",
         "table": "evitals_18",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
-        "id": "GlasgowScoreGroup",
+        "id": "eVitals.GlasgowScoreGroup",
         "table": "evitals_glasgowscoregroup",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "group",
     },
     {
-        "id": "TemperatureGroup",
+        "id": "eVitals.TemperatureGroup",
         "table": "evitals_temperaturegroup",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "group",
     },
     {
         "id": "eVitals.26",
         "table": "evitals_26",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
-        "id": "PainScaleGroup",
+        "id": "eVitals.PainScaleGroup",
         "table": "evitals_painscalegroup",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "group",
     },
     {
-        "id": "StrokeScaleGroup",
+        "id": "eVitals.StrokeScaleGroup",
         "table": "evitals_strokescalegroup",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "group",
     },
     {
         "id": "eVitals.31",
         "table": "evitals_31",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.32",
         "table": "evitals_32",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     {
         "id": "eVitals.33",
         "table": "evitals_33",
-        "parent_id": "VitalGroup",
+        "parent_id": "eVitals.VitalGroup",
         "type": "element",
     },
     # Children of CardiacRhythmGroup
     {
         "id": "eVitals.03",
         "table": "evitals_03",
-        "parent_id": "CardiacRhythmGroup",
+        "parent_id": "eVitals.CardiacRhythmGroup",
         "type": "element",
     },
     {
         "id": "eVitals.04",
         "table": "evitals_04",
-        "parent_id": "CardiacRhythmGroup",
+        "parent_id": "eVitals.CardiacRhythmGroup",
         "type": "element",
     },
     {
         "id": "eVitals.05",
         "table": "evitals_05",
-        "parent_id": "CardiacRhythmGroup",
+        "parent_id": "eVitals.CardiacRhythmGroup",
         "type": "element",
     },
     # Children of BloodPressureGroup
     {
         "id": "eVitals.06",
         "table": "evitals_06",
-        "parent_id": "BloodPressureGroup",
+        "parent_id": "eVitals.BloodPressureGroup",
         "type": "element",
     },
     {
         "id": "eVitals.07",
         "table": "evitals_07",
-        "parent_id": "BloodPressureGroup",
+        "parent_id": "eVitals.BloodPressureGroup",
         "type": "element",
     },
     {
         "id": "eVitals.08",
         "table": "evitals_08",
-        "parent_id": "BloodPressureGroup",
+        "parent_id": "eVitals.BloodPressureGroup",
         "type": "element",
     },
     # Children of HeartRateGroup
     {
         "id": "eVitals.10",
         "table": "evitals_10",
-        "parent_id": "HeartRateGroup",
+        "parent_id": "eVitals.HeartRateGroup",
         "type": "element",
     },
     {
         "id": "eVitals.11",
         "table": "evitals_11",
-        "parent_id": "HeartRateGroup",
+        "parent_id": "eVitals.HeartRateGroup",
         "type": "element",
     },
     # Children of GlasgowScoreGroup
     {
         "id": "eVitals.19",
         "table": "evitals_19",
-        "parent_id": "GlasgowScoreGroup",
+        "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
     },
     {
         "id": "eVitals.20",
         "table": "evitals_20",
-        "parent_id": "GlasgowScoreGroup",
+        "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
     },
     {
         "id": "eVitals.21",
         "table": "evitals_21",
-        "parent_id": "GlasgowScoreGroup",
+        "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
     },
     {
         "id": "eVitals.22",
         "table": "evitals_22",
-        "parent_id": "GlasgowScoreGroup",
+        "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
     },
     {
         "id": "eVitals.23",
         "table": "evitals_23",
-        "parent_id": "GlasgowScoreGroup",
+        "parent_id": "eVitals.GlasgowScoreGroup",
         "type": "element",
     },
     # Children of TemperatureGroup
     {
         "id": "eVitals.24",
         "table": "evitals_24",
-        "parent_id": "TemperatureGroup",
+        "parent_id": "eVitals.TemperatureGroup",
         "type": "element",
     },
     {
         "id": "eVitals.25",
         "table": "evitals_25",
-        "parent_id": "TemperatureGroup",
+        "parent_id": "eVitals.TemperatureGroup",
         "type": "element",
     },
     # Children of PainScaleGroup
     {
         "id": "eVitals.27",
         "table": "evitals_27",
-        "parent_id": "PainScaleGroup",
+        "parent_id": "eVitals.PainScaleGroup",
         "type": "element",
     },
     {
         "id": "eVitals.28",
         "table": "evitals_28",
-        "parent_id": "PainScaleGroup",
+        "parent_id": "eVitals.PainScaleGroup",
         "type": "element",
     },
     # Children of StrokeScaleGroup
     {
         "id": "eVitals.29",
         "table": "evitals_29",
-        "parent_id": "StrokeScaleGroup",
+        "parent_id": "eVitals.StrokeScaleGroup",
         "type": "element",
     },
     {
         "id": "eVitals.30",
         "table": "evitals_30",
-        "parent_id": "StrokeScaleGroup",
+        "parent_id": "eVitals.StrokeScaleGroup",
+        "type": "element",
+    },
+    {
+        "id": "eVitals.34",
+        "table": "evitals_34",
+        "parent_id": "eVitals.StrokeScaleGroup",
         "type": "element",
     },
 ]
@@ -748,19 +755,14 @@ EDISPATCH_STRUCTURE = [
 
 EDISPOSITION_STRUCTURE = [
     # Base Group (Parent of all direct children)
-    {
-        "id": "eDisposition",
-        "table": "edisposition",
-        "parent_id": None,
-        "type": "group",
-    },
-    # DestinationGroup
+    {"id": "eDisposition", "table": "edisposition", "parent_id": None, "type": "group"},
     {
         "id": "eDisposition.DestinationGroup",
         "table": "edisposition_destinationgroup",
         "parent_id": "eDisposition",
         "type": "group",
     },
+    # Direct Children of DestinationGroup
     {
         "id": "eDisposition.01",
         "table": "edisposition_01",
@@ -3047,6 +3049,7 @@ ECUSTOMCONFIGURATION_STRUCTURE = [
         "table": "ecustomconfiguration_01",
         "parent_id": "eCustomConfiguration.CustomGroup",
         "type": "element",
+        "description": "Custom Configuration 1",
     },
     {
         "id": "eCustomConfiguration.02",
@@ -3132,3 +3135,8 @@ ECUSTOMRESULTS_STRUCTURE = [
         "type": "element",
     },
 ]
+
+
+# TODO: Add comments to the views
+# TODO: Add 3.5.1 new fields to structures
+# TODO: Add pivot view for custom results to include in views for related items
