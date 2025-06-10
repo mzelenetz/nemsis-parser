@@ -89,17 +89,7 @@ def generate_view_sql(view_name: str, structure: list, cursor) -> str:
         existing_cols = table_columns_cache[table_name]
         for col in cols_to_select:
             if col in existing_cols:
-                desc = element.get("description", "")
-                if col == "text_content":
-                    col_alias = alias
-                else:
-                    col_alias = f"{alias}{col}"
-                if desc:
-                    select_clauses.append(
-                        f'"{alias}"."{col}" AS "{col_alias}" -- {desc}'
-                    )
-                else:
-                    select_clauses.append(f'"{alias}"."{col}" AS "{col_alias}" --')
+                select_clauses.append(f'"{alias}"."{col}" AS "{alias}{col}"')
 
         join_clause = (
             f'FULL JOIN "public"."{table_name}" AS "{alias}" '
@@ -108,12 +98,12 @@ def generate_view_sql(view_name: str, structure: list, cursor) -> str:
         join_clauses.append(join_clause)
 
     final_sql = f"""
-        CREATE OR REPLACE VIEW public.{view_name} AS
-        SELECT
-        {', '.join(select_clauses)}
-        {from_clause}
-        {' '.join(join_clauses)};
-        """
+CREATE OR REPLACE VIEW public.{view_name} AS
+SELECT
+  {', '.join(select_clauses)}
+{from_clause}
+{' '.join(join_clauses)};
+"""
     return final_sql
 
 
