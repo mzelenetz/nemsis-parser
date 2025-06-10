@@ -34,12 +34,12 @@ class IngestResponse(BaseModel):
     status: Optional[str] = None
 
 class QueryParams(BaseModel):
-    query_id: str = Query(..., description="The ID of the pre-defined query (view name) to execute.")
-    date_from: datetime = Query(..., description="Start of the date range (ISO format).")
-    date_to: datetime = Query(..., description="End of the date range (ISO format).")
-    diagnosis: Optional[List[str]] = Query(None, description="List of diagnosis codes to filter by.")
-    procedures: Optional[List[str]] = Query(None, description="List of procedure codes to filter by.")
-    medications: Optional[List[str]] = Query(None, description="List of medication codes to filter by.")
+    query_id: str
+    date_from: datetime
+    date_to: datetime
+    diagnosis: Optional[List[str]] = None
+    procedures: Optional[List[str]] = None
+    medications: Optional[List[str]] = None
 
 class QueryResult(BaseModel):
     query_id: str
