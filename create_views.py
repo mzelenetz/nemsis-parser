@@ -130,6 +130,42 @@ def create_view_in_db(conn, view_name, view_sql):
     cursor.close()
 
 
+def generate_comment_sql(view_name: str, structure: list, cursor) -> list:
+    group_columns = ["element_id", "pcr_uuid_context", "correlationid"]
+    element_columns = ["text_content", "nil", "nv", "correlationid", "Etco2type"]
+
+    aliases = {}
+    base_element = next(item for item in structure if item["parent_id"] is None)
+    base_alias = sanitize_alias(base_element["id"])
+    aliases[base_element["id"]] = base_alias
+
+    comment_statements = []
+
+    # Base group columns
+    for col in group_columns:
+        colname = f"{base_alias}{col}"
+        desc = base_element.get("description") or ""
+        if desc:
+            comment_statements.append(
+                f"COMMENT ON COLUMN public.{view_name}.{colname} IS '{desc}';"
+            )
+
+    # Child elements/groups
+    for element in [e for e in structure if e["parent_id"] is not None]:
+        alias = sanitize_alias(element["id"])
+        cols_to_select = (
+            group_columns if element["type"] == "group" else element_columns
+        )
+        desc = element.get("description") or ""
+        for col in cols_to_select:
+            colname = f"{alias}{col}"
+            if desc:
+                comment_statements.append(
+                    f"COMMENT ON COLUMN public.{view_name}.{colname} IS '{desc}';"
+                )
+    return comment_statements
+
+
 if __name__ == "__main__":
     conn = get_db_connection()
     if not conn:
@@ -315,6 +351,6 @@ if __name__ == "__main__":
         if "--verbose" in sys.argv:
             print(f"\nGenerated SQL for {view_name}:\n{ecustomresults_sql}\n")
         create_view_in_db(conn, view_name, ecustomresults_sql)
-        # setup_element_definitions(conn)
+        setup_element_definitions(conn)
 
         conn.close()

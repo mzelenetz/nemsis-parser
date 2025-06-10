@@ -249,6 +249,12 @@ EVITALS_STRUCTURE = [
         "parent_id": "eVitals.StrokeScaleGroup",
         "type": "element",
     },
+    {
+        "id": "eVitals.34",
+        "table": "evitals_34",
+        "parent_id": "eVitals.StrokeScaleGroup",
+        "type": "element",
+    },
 ]
 
 EPROCEDURES_STRUCTURE = [
@@ -3043,6 +3049,7 @@ ECUSTOMCONFIGURATION_STRUCTURE = [
         "table": "ecustomconfiguration_01",
         "parent_id": "eCustomConfiguration.CustomGroup",
         "type": "element",
+        "description": "Custom Configuration 1",
     },
     {
         "id": "eCustomConfiguration.02",
