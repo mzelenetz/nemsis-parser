@@ -1,6 +1,7 @@
 import psycopg2
 import requests
 import csv
+from database_setup import get_db_connection
 
 NEMSIS_ENUM_URL = "https://nemsis.org/media/nemsis_v3/release-3.5.1/DataDictionary/Ancillary/DEMEMS/Combined_ElementEnumerations.txt"
 FIELD_DEF_URL = "https://nemsis.org/media/nemsis_v3/release-3.5.1/DataDictionary/Ancillary/DEMEMS/Combined_ElementAttributes.txt"
@@ -42,11 +43,11 @@ def populate_element_definitions_table(conn):
     reader = csv.DictReader(lines, delimiter="|")
     rows = [
         (
-            row.get("DatasetName", "").strip(),
-            row.get("ElementNumber", "").strip(),
-            row.get("ElementName", "").strip(),
-            row.get("Code", "").strip(),
-            row.get("CodeDescription", "").strip(),
+            row.get("'DatasetName'", "").strip().replace("'", ""),
+            row.get("'ElementNumber'", "").strip().replace("'", ""),
+            row.get("'ElementName'", "").strip().replace("'", ""),
+            row.get("'Code'", "").strip().replace("'", ""),
+            row.get("'CodeDescription'", "").strip().replace("'", ""),
         )
         for row in reader
     ]
@@ -99,11 +100,11 @@ def populate_field_definitions_table(conn):
     reader = csv.DictReader(lines, delimiter="|")
     rows = [
         (
-            row.get("Dataset", "").strip(),
-            row.get("DatasetType", "").strip(),
-            row.get("ElementNumber", "").strip(),
-            row.get("ElementName", "").strip(),
-            row.get("Attribute", "").strip(),
+            row.get("'Dataset'", "").strip().replace("'", ""),
+            row.get("'DatasetType'", "").strip().replace("'", ""),
+            row.get("'ElementNumber'", "").strip().replace("'", ""),
+            row.get("'ElementName'", "").strip().replace("'", ""),
+            row.get("'Attribute'", "").strip().replace("'", ""),
         )
         for row in reader
     ]
@@ -135,3 +136,8 @@ def setup_element_definitions(conn):
     populate_field_definitions_table(conn)
     print("[FieldDefinitions] Setup complete.")
     conn.close()
+
+
+if __name__ == "__main__":
+    conn = get_db_connection()
+    setup_element_definitions(conn)

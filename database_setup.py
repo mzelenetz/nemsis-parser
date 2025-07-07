@@ -1,27 +1,26 @@
-import psycopg2  # Changed from sqlite3
-import psycopg2.extras  # For dictionary cursor
+import psycopg2  
+import psycopg2.extras  
 import datetime
 import uuid  # For generating initial schema version if needed, or other UUIDs
 
+from config import PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD 
 # Import PostgreSQL connection details from config.py
-try:
-    from config import PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD
-except ImportError:
-    print("Error: Could not import PostgreSQL configuration from config.py.")
-    print(
-        "Ensure config.py is present and defines PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD."
-    )
-    # Fallback or exit might be needed here if config is critical
-    exit(1)
+# try:
+#     from config import PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD
+# except ImportError:
+#     print("Error: Could not import PostgreSQL configuration from config.py.")
+#     print(
+#         "Ensure config.py is present and defines PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD."
+#     )
+#     # Fallback or exit might be needed here if config is critical
+#     exit(1)
+CONNECTION = psycopg2.extensions.connection
 
-
-def get_db_connection():
+def get_db_connection() -> CONNECTION:
     """Establishes a connection to the PostgreSQL database."""
     if not all([PG_DATABASE, PG_USER, PG_PASSWORD]):
-        print(
-            "Database connection cannot be established: Missing PG_DATABASE, PG_USER, or PG_PASSWORD in config."
-        )
-        return None
+        raise ValueError("Database connection cannot be established: Missing PG_DATABASE, PG_USER, or PG_PASSWORD in config.")
+    
     try:
         conn = psycopg2.connect(
             host=PG_HOST,
@@ -37,8 +36,7 @@ def get_db_connection():
         )
         return conn
     except psycopg2.OperationalError as e:
-        print(f"Error connecting to PostgreSQL database: {e}")
-        return None
+        raise ConnectionError(f"Error connecting to PostgreSQL database: {e}")
 
 
 def create_tables(conn):

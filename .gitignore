@@ -1,5 +1,6 @@
 nemsis_xml/desktop.ini
 /processed_xml_archive
+/nemsis_xml
 .env
 scratch.py
 /__pycache__

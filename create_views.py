@@ -3,6 +3,7 @@ import re
 from structures import *
 import sys
 from create_definitions import setup_element_definitions
+import pandas as pd
 
 conn = get_db_connection()
 
@@ -40,7 +41,23 @@ def sanitize_alias(id_str):
     return re.sub(r"[^a-zA-Z0-9_]", "_", id_str) + "_"
 
 
-def generate_view_sql(view_name: str, structure: list, cursor) -> str:
+def get_element_map(conn) -> dict:
+    element_map = {}
+    elements = pd.read_sql(
+        """select elementnumber, elementname
+            from FieldDefinitions
+            where datasettype = 'element'""",
+        conn,
+    )
+    element_list = elements.to_dict("index")
+    for _, element in element_list.items():
+        element_map[element["elementnumber"]] = element["elementname"]
+    return element_map
+
+
+def generate_view_sql(
+    view_name: str, structure: list, cursor, column_name_map: dict
+) -> str:
     group_columns = ["element_id", "pcr_uuid_context", "correlationid"]
     element_columns = ["text_content", "nil", "nv", "correlationid", "Etco2type"]
 
@@ -54,77 +71,36 @@ def generate_view_sql(view_name: str, structure: list, cursor) -> str:
         item["table"]: get_table_columns(cursor, item["table"]) for item in structure
     }
 
-    select_clauses = [
-        f'"{base_alias}"."{col}" AS "{base_alias}{col}"'
-        for col in group_columns
-        if col in table_columns_cache[base_table_name]
-    ]
-    from_clause = f'FROM "public"."{base_table_name}" AS "{base_alias}"'
-    join_clauses = []
+    tables_to_join = [struc["table"] for struc in structure]
 
-    for element in [e for e in structure if e["parent_id"] is not None]:
-        table_name = element["table"]
-        alias = sanitize_alias(element["id"])
-        aliases[element["id"]] = alias
+    # select_clauses = [
+    #     f'"{base_alias}"."{col}" AS "{base_alias}{col}"'
+    #     for col in group_columns
+    #     if col in table_columns_cache[base_table_name]
+    # ]
+    # from_clause = f'FROM "public"."{base_table_name}" AS "{base_alias}"'
+    # join_clauses = []
 
-        parent_alias = aliases[element["parent_id"]]
-        cols_to_select = (
-            group_columns if element["type"] == "group" else element_columns
-        )
+    # for element in [e for e in structure if e["parent_id"] is not None]:
+    #     table_name = element["table"]
+    #     alias = sanitize_alias(column_name_map.get(element["id"], element["id"]))
+    #     aliases[element["id"]] = alias
 
-        existing_cols = table_columns_cache[table_name]
-        for col in cols_to_select:
-            if col in existing_cols:
-                select_clauses.append(f'"{alias}"."{col}" AS "{alias}{col}"')
+    #     parent_alias = aliases[element["parent_id"]]
+    #     cols_to_select = (
+    #         group_columns if element["type"] == "group" else element_columns
+    #     )
 
-        join_clause = (
-            f'FULL JOIN "public"."{table_name}" AS "{alias}" '
-            f'ON "{parent_alias}"."element_id" = "{alias}"."parent_element_id"'
-        )
-        join_clauses.append(join_clause)
+    #     existing_cols = table_columns_cache[table_name]
+    #     for col in cols_to_select:
+    #         if col in existing_cols:
+    #             select_clauses.append(f'"{alias}"."{col}" AS "{alias}{col}"')
 
-    final_sql = f"""
-CREATE OR REPLACE VIEW public.{view_name} AS
-SELECT
-  {', '.join(select_clauses)}
-{from_clause}
-{' '.join(join_clauses)};
-"""
-    return final_sql
-
-    group_columns = ["element_id", "pcr_uuid_context", "correlationid"]
-    element_columns = ["text_content", "nil", "nv", "correlationid", "Etco2type"]
-
-    aliases = {}
-    base_element = next(item for item in structure if item["parent_id"] is None)
-    base_table_name = base_element["table"]
-    base_alias = sanitize_alias(base_element["id"])
-    aliases[base_element["id"]] = base_alias
-
-    select_clauses = [
-        f'"{base_alias}"."{col}" AS "{base_alias}{col}"' for col in group_columns
-    ]
-    from_clause = f'FROM "public"."{base_table_name}" AS "{base_alias}"'
-    join_clauses = []
-
-    for element in [e for e in structure if e["parent_id"] is not None]:
-        table_name = element["table"]
-        alias = sanitize_alias(element["id"])
-        aliases[element["id"]] = alias
-
-        parent_alias = aliases[element["parent_id"]]
-        cols_to_select = (
-            group_columns if element["type"] == "group" else element_columns
-        )
-
-        for col in cols_to_select:
-            select_clauses.append(f'"{alias}"."{col}" AS "{alias}{col}"')
-
-        join_clause = (
-            f'FULL JOIN "public"."{table_name}" AS "{alias}" '
-            f'ON "{parent_alias}"."element_id" = "{alias}"."parent_element_id"'
-        )
-        join_clauses.append(join_clause)
+    #     join_clause = (
+    #         f'FULL JOIN "public"."{table_name}" AS "{alias}" '
+    #         f'ON "{parent_alias}"."element_id" = "{alias}"."parent_element_id"'
+    #     )
+    #     join_clauses.append(join_clause)
 
     final_sql = f"""
 CREATE OR REPLACE VIEW public.{view_name} AS
@@ -139,7 +115,7 @@ SELECT
 def create_view_in_db(conn, view_name, view_sql):
     """
     Creates or replaces a SQL view in the database using the provided SQL statement.
-    
+
     Attempts to drop the existing view before creating the new one. Prints status messages and rolls back the transaction if view creation fails.
     """
     cursor = conn.cursor()
@@ -165,185 +141,47 @@ if __name__ == "__main__":
         print("Could not connect to the database.")
     else:
         cursor = conn.cursor()
-        # vitals
-        filtered_structure = filter_structure(EVITALS_STRUCTURE, cursor)
-        view_name = "v_evitals_flat"
-        evitals_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{evitals_sql}\n")
-        create_view_in_db(conn, view_name, evitals_sql)
-        # procedures
-        filtered_structure = filter_structure(EPROCEDURES_STRUCTURE, cursor)
-        view_name = "v_eprocedures_flat"
-        eprocedures_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{eprocedures_sql}\n")
-        create_view_in_db(conn, view_name, eprocedures_sql)
 
-        # airway
-        filtered_structure = filter_structure(EAIRWAY_STRUCTURE, cursor)
-        view_name = "v_eairway_flat"
-        eairway_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{eairway_sql}\n")
-        create_view_in_db(conn, view_name, eairway_sql)
-        # crew
-        filtered_structure = filter_structure(ECREW_STRUCTURE, cursor)
-        view_name = "v_ecrew_flat"
-        ecrew_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{ecrew_sql}\n")
-        create_view_in_db(conn, view_name, ecrew_sql)
-        # device
-        filtered_structure = filter_structure(EDEVICE_STRUCTURE, cursor)
-        view_name = "v_edevice_flat"
-        edevice_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{edevice_sql}\n")
-        create_view_in_db(conn, view_name, edevice_sql)
-        # arrest
-        filtered_structure = filter_structure(EARREST_STRUCTURE, cursor)
-        view_name = "v_earrest_flat"
-        earrest_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{earrest_sql}\n")
-        create_view_in_db(conn, view_name, earrest_sql)
-        # dispatch
-        filtered_structure = filter_structure(EDISPATCH_STRUCTURE, cursor)
-        view_name = "v_edispatch_flat"
-        edispatch_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{edispatch_sql}\n")
-        create_view_in_db(conn, view_name, edispatch_sql)
-        # disposition
-        filtered_structure = filter_structure(EDISPOSITION_STRUCTURE, cursor)
-        view_name = "v_edisposition_flat"
-        edisposition_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{edisposition_sql}\n")
-        create_view_in_db(conn, view_name, edisposition_sql)
-        # exam
-        filtered_structure = filter_structure(EEXAM_STRUCTURE, cursor)
-        view_name = "v_eexam_flat"
-        eexam_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{eexam_sql}\n")
-        create_view_in_db(conn, view_name, eexam_sql)
-        # history
-        filtered_structure = filter_structure(EHISTORY_STRUCTURE, cursor)
-        view_name = "v_ehistory_flat"
-        ehistory_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{ehistory_sql}\n")
-        create_view_in_db(conn, view_name, ehistory_sql)
-        # injury
-        filtered_structure = filter_structure(EINJURY_STRUCTURE, cursor)
-        view_name = "v_einjury_flat"
-        einjury_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{einjury_sql}\n")
-        create_view_in_db(conn, view_name, einjury_sql)
-        # lab
-        filtered_structure = filter_structure(ELABS_STRUCTURE, cursor)
-        view_name = "v_elabs_flat"
-        elabs_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{elabs_sql}\n")
-        create_view_in_db(conn, view_name, elabs_sql)
+        column_name_map = table_column_name_map = get_element_map(conn)
+        structures = {
+            "vitals": EVITALS_STRUCTURE,
+            "procedures": EPROCEDURES_STRUCTURE,
+            "airway": EAIRWAY_STRUCTURE,
+            "crew": ECREW_STRUCTURE,
+            "device": EDEVICE_STRUCTURE,
+            "arrest": EARREST_STRUCTURE,
+            "dispatch": EDISPATCH_STRUCTURE,
+            "disposition": EDISPOSITION_STRUCTURE,
+            "exam": EEXAM_STRUCTURE,
+            "history": EHISTORY_STRUCTURE,
+            "injury": EINJURY_STRUCTURE,
+            "lab": ELABS_STRUCTURE,
+            "medication": EMEDICATIONS_STRUCTURE,
+            "other": EOTHER_STRUCTURE,
+            "patient": EPATIENT_STRUCTURE,
+            "payment": EPAYMENT_STRUCTURE,
+            "protocols": EPROTOCOLS_STRUCTURE,
+            "record": ERECORD_STRUCTURE,
+            "response": ERESPONSE_STRUCTURE,
+            "scene": ESCENE_STRUCTURE,
+            "situation": ESITUATION_STRUCTURE,
+            "times": ETIMES_STRUCTURE,
+            "custom": ECUSTOMCONFIGURATION_STRUCTURE,
+        }
 
-        # medications
-        filtered_structure = filter_structure(EMEDICATIONS_STRUCTURE, cursor)
-        view_name = "v_emedications_flat"
-        emedications_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{emedications_sql}\n")
-        create_view_in_db(conn, view_name, emedications_sql)
-        # other
-        filtered_structure = filter_structure(EOTHER_STRUCTURE, cursor)
-        view_name = "v_eother_flat"
-        eother_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{eother_sql}\n")
-        create_view_in_db(conn, view_name, eother_sql)
-        # outcome
-        filtered_structure = filter_structure(EOUTCOME_STRUCTURE, cursor)
-        view_name = "v_eoutcome_flat"
-        eoutcome_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{eoutcome_sql}\n")
-        create_view_in_db(conn, view_name, eoutcome_sql)
-        # patient
-        filtered_structure = filter_structure(EPATIENT_STRUCTURE, cursor)
-        view_name = "v_epatient_flat"
-        epatient_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{epatient_sql}\n")
-        create_view_in_db(conn, view_name, epatient_sql)
-        # payment
-        filtered_structure = filter_structure(EPAYMENT_STRUCTURE, cursor)
-        view_name = "v_epayment_flat"
-        epayment_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{epayment_sql}\n")
-        create_view_in_db(conn, view_name, epayment_sql)
-        # protocols
-        filtered_structure = filter_structure(EPROTOCOLS_STRUCTURE, cursor)
-        view_name = "v_eprotocols_flat"
-        eprotocols_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{eprotocols_sql}\n")
-        create_view_in_db(conn, view_name, eprotocols_sql)
-        # record
-        filtered_structure = filter_structure(ERECORD_STRUCTURE, cursor)
-        view_name = "v_erecord_flat"
-        erecord_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{erecord_sql}\n")
-        create_view_in_db(conn, view_name, erecord_sql)
-        # response
-        filtered_structure = filter_structure(ERESPONSE_STRUCTURE, cursor)
-        view_name = "v_eresponse_flat"
-        eresponse_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{eresponse_sql}\n")
-        create_view_in_db(conn, view_name, eresponse_sql)
-        # scene
-        filtered_structure = filter_structure(ESCENE_STRUCTURE, cursor)
-        view_name = "v_escene_flat"
-        escene_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{escene_sql}\n")
-        create_view_in_db(conn, view_name, escene_sql)
-        # situation
-        filtered_structure = filter_structure(ESITUATION_STRUCTURE, cursor)
-        view_name = "v_esituation_flat"
-        esituation_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{esituation_sql}\n")
-        create_view_in_db(conn, view_name, esituation_sql)
-        # times
-        filtered_structure = filter_structure(ETIMES_STRUCTURE, cursor)
-        view_name = "v_etimes_flat"
-        etimes_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{etimes_sql}\n")
-        create_view_in_db(conn, view_name, etimes_sql)
-        # custom configuration
-        filtered_structure = filter_structure(ECUSTOMCONFIGURATION_STRUCTURE, cursor)
-        view_name = "v_ecustomconfiguration_flat"
-        ecustomconfiguration_sql = generate_view_sql(
-            view_name, filtered_structure, cursor
-        )
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{ecustomconfiguration_sql}\n")
-        create_view_in_db(conn, view_name, ecustomconfiguration_sql)
-        # custom results
-        filtered_structure = filter_structure(ECUSTOMRESULTS_STRUCTURE, cursor)
-        view_name = "v_ecustomresults_flat"
-        ecustomresults_sql = generate_view_sql(view_name, filtered_structure, cursor)
-        if "--verbose" in sys.argv:
-            print(f"\nGenerated SQL for {view_name}:\n{ecustomresults_sql}\n")
-        create_view_in_db(conn, view_name, ecustomresults_sql)
+        for view_name, structure in structures.items():
+            filtered_structure = filter_structure(structure, cursor)
+            if len(filtered_structure) == 0:
+                print(f"Skipping {view_name} view")
+                continue
+
+            sql = generate_view_sql(
+                view_name, filtered_structure, cursor, column_name_map
+            )
+            create_view_in_db(conn, view_name, sql)
+            if "--verbose" in sys.argv:
+                print(f"\nGenerated SQL for {view_name}:\n{sql}\n")
+
         setup_element_definitions(conn)
 
         conn.close()
