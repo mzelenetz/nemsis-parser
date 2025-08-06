@@ -1,9 +1,10 @@
-import psycopg2  
-import psycopg2.extras  
+import psycopg2
+import psycopg2.extras
 import datetime
 import uuid  # For generating initial schema version if needed, or other UUIDs
 
-from config import PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD 
+from config import PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD
+
 # Import PostgreSQL connection details from config.py
 # try:
 #     from config import PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD
@@ -16,11 +17,14 @@ from config import PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD
 #     exit(1)
 CONNECTION = psycopg2.extensions.connection
 
+
 def get_db_connection() -> CONNECTION:
     """Establishes a connection to the PostgreSQL database."""
     if not all([PG_DATABASE, PG_USER, PG_PASSWORD]):
-        raise ValueError("Database connection cannot be established: Missing PG_DATABASE, PG_USER, or PG_PASSWORD in config.")
-    
+        raise ValueError(
+            "Database connection cannot be established: Missing PG_DATABASE, PG_USER, or PG_PASSWORD in config."
+        )
+
     try:
         conn = psycopg2.connect(
             host=PG_HOST,
@@ -37,6 +41,91 @@ def get_db_connection() -> CONNECTION:
         return conn
     except psycopg2.OperationalError as e:
         raise ConnectionError(f"Error connecting to PostgreSQL database: {e}")
+
+
+def create_xsd_schema_tables(conn):
+    """Creates XSD schema metadata tables used by the NEMSIS XSD ingestion."""
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            -- Elements and their schema metadata
+            CREATE TABLE IF NOT EXISTS XSD_Elements (
+              id SERIAL PRIMARY KEY,
+              DatasetName TEXT NOT NULL,           -- e.g., 'eResponse'
+              ElementNumber TEXT,                  -- e.g., 'eResponse.13'
+              ElementName TEXT NOT NULL,           -- human-friendly label when available
+              XMLName TEXT NOT NULL,               -- exact XML element @name
+              TypeName TEXT,                       -- referenced or inline base type
+              GroupName TEXT,                      -- parent group
+              Definition TEXT,
+              Usage TEXT,
+              v2Number TEXT,
+              National BOOLEAN,
+              State BOOLEAN,
+              MinOccurs INTEGER,
+              MaxOccurs TEXT,                      -- 'unbounded' or integer as text
+              Nillable BOOLEAN DEFAULT FALSE,
+              HasSimpleContent BOOLEAN DEFAULT FALSE,
+              CreatedAt TIMESTAMP DEFAULT now()
+            );
+            """
+        )
+
+        cursor.execute(
+            """
+            -- Simple types and their documentation (create before enums)
+            CREATE TABLE IF NOT EXISTS XSD_SimpleTypes (
+              TypeName TEXT PRIMARY KEY,
+              BaseType TEXT,                       -- xs:string, xs:decimal, etc.
+              Documentation TEXT
+            );
+            """
+        )
+
+        cursor.execute(
+            """
+            -- Enumerations for simple types (code -> description)
+            CREATE TABLE IF NOT EXISTS XSD_Enumerations (
+              TypeName TEXT REFERENCES XSD_SimpleTypes(TypeName) ON DELETE CASCADE,
+              Code TEXT,
+              CodeDescription TEXT,
+              PRIMARY KEY (TypeName, Code)
+            );
+            """
+        )
+
+        cursor.execute(
+            """
+            -- Element attributes (e.g., NV, CorrelationID with allowed values)
+            CREATE TABLE IF NOT EXISTS XSD_ElementAttributes (
+              ElementId INTEGER REFERENCES XSD_Elements(id) ON DELETE CASCADE,
+              AttributeName TEXT,
+              AllowedValues TEXT,                  -- e.g., 'NV.NotApplicable|NV.NotRecorded|NV.NotReporting'
+              UNIQUE (ElementId, AttributeName)
+            );
+            """
+        )
+
+        cursor.execute(
+            """
+            -- Optional: map element -> valueset type (handy join)
+            CREATE TABLE IF NOT EXISTS XSD_ElementValueSet (
+              ElementId INTEGER REFERENCES XSD_Elements(id) ON DELETE CASCADE,
+              TypeName TEXT REFERENCES XSD_SimpleTypes(TypeName) ON DELETE CASCADE,
+              PRIMARY KEY (ElementId, TypeName)
+            );
+            """
+        )
+
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_xe_dataset_num ON XSD_Elements(DatasetName, ElementNumber);"
+        )
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_xe_xmlname ON XSD_Elements(XMLName);"
+        )
+
+    conn.commit()
+    print("Checked/Created XSD_* schema metadata tables and indexes.")
 
 
 def create_tables(conn):
@@ -129,6 +218,7 @@ if __name__ == "__main__":
         db_conn = get_db_connection()
         if db_conn:
             create_tables(db_conn)
+            create_xsd_schema_tables(db_conn)
             add_initial_schema_version(
                 db_conn, demographic_group="SystemInternal_PG_v4"
             )

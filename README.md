@@ -117,5 +117,8 @@ python vendor_import.py -file_path <path_to_excel> -vendor <vendor_name> -source
 - **Missing dependencies:** Install with `pip install psycopg2 python-dotenv`.
 - **Permission errors:** Make sure your PostgreSQL user has rights to create tables and comments.
 
+## Starting Postgres
+`docker run -p 5432:5432 -d -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=nemsis postgres`
+
 ## License
 MIT License
