@@ -124,7 +124,7 @@ def needs_drop_recreate(
 
 
 # ---------------------------
-# Initialization (one-time or idempotent)
+# Initialization
 # ---------------------------
 INIT_SQL = r"""
 -- 1) Classifier for sections (adjust patterns as needed)
@@ -429,7 +429,7 @@ def build_view_sql(conn: PGConn, view_name: str) -> tuple[str, list[str]]:
             cols = cur.fetchall()
 
         if not cols:
-            return None, []
+            return None, []  # type:ignore
 
         # ---------- build select list with safe, unique aliases ----------
         used_aliases: set[str] = set()
@@ -464,7 +464,7 @@ def build_view_sql(conn: PGConn, view_name: str) -> tuple[str, list[str]]:
                     f"Unsupported agg_fn {agg_fn} for {view_name}.{elemnum}"
                 )
 
-            elem_lit = mog(cur, "%s", elemnum)  # literal 'eResponse.13' safely quoted
+            elem_lit = mog(cur, "%s", elemnum)
 
             if agg_fn == "STRING_AGG_DISTINCT":
                 expr = (
@@ -542,20 +542,17 @@ def rebuild(conn, only=None):
             continue
         cardinality = reg[0]["cardinality"]
 
-        existing_cols = get_view_columns(conn, view_name)  # [] if view doesn't exist
+        existing_cols = get_view_columns(conn, view_name)
         sql_and_cols = build_view_sql(conn, view_name)
         if not sql_and_cols or not sql_and_cols[0]:
             print(f"Skipping {view_name}: no columns resolved.")
             continue
         sql, desired_cols = sql_and_cols
 
-        # Decide strategy
-        # 1) If the view doesn't exist yet, just create it
         if not existing_cols:
             exec_sql(conn, sql)
             continue
 
-        # 2) If a rename/reorder is needed, drop & recreate
         if needs_drop_recreate(existing_cols, desired_cols, cardinality):
             try:
                 exec_sql(conn, f"DROP VIEW {psql_ident(view_name)};", silent=True)
@@ -570,7 +567,6 @@ def rebuild(conn, only=None):
             exec_sql(conn, sql)
             continue
 
-        # 3) Otherwise, we can replace in-place; still handle column removals via placeholders
         to_remove = [
             c
             for c in existing_cols

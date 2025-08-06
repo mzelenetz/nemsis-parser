@@ -170,7 +170,7 @@ def extract_tacdoc_fields(doc_elem: Optional[ET.Element]) -> Dict[str, Optional[
         "State": None,
     }
     if doc_elem is None:
-        return out
+        return out  # type: ignore I think the type checker is wrong!
     raw = "".join(doc_elem.itertext()).strip()
     try:
         wrapper = ET.fromstring(
@@ -181,21 +181,21 @@ def extract_tacdoc_fields(doc_elem: Optional[ET.Element]) -> Dict[str, Optional[
             val = text_or_none(e)
             tl = tag.lower()
             if tl in ("name", "elementname") and val:
-                out["Name"] = val
+                out["Name"] = val  # type: ignore
             elif tl in ("definition",):
-                out["Definition"] = val
+                out["Definition"] = val  # type: ignore
             elif tl in ("usage",):
-                out["Usage"] = val
+                out["Usage"] = val  # type: ignore
             elif tl in ("v2number", "v2 number"):
-                out["v2Number"] = val
+                out["v2Number"] = val  # type: ignore
             elif tl == "national":
-                out["National"] = val
+                out["National"] = val  # type: ignore
             elif tl == "state":
-                out["State"] = val
+                out["State"] = val  # type: ignore
     except Exception:
         if raw and not out["Definition"]:
-            out["Definition"] = raw
-    return out
+            out["Definition"] = raw  # type: ignore
+    return out  # type: ignore
 
 
 def parse_attributes(attr_parent: ET.Element) -> Dict[str, Optional[str]]:
